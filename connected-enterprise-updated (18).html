@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en" class="intro-on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Behind Every Moment of Care · ServiceNow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500&family=Instrument+Sans:wght@400;500;600&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   SHARED DOCUMENT
+   ===================================================================== */
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar,html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;background:transparent}
+html{background:#02060f}
+body{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html.intro-on,html.intro-on body{height:100%;overflow:hidden}
+html.eco-on{background:#04121f;overflow-y:scroll;overflow-x:hidden;scroll-behavior:smooth}
+html.eco-on body{overflow-x:hidden}
+html.eco-on.scroll-lock{overflow:hidden}
+[hidden]{display:none!important}
+body.idle #gl{cursor:none}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+/* =====================================================================
+   EXPERIENCE 1 · DOCTOR / PATIENT JOURNEY INTRO   (scoped to #introRoot)
+   ===================================================================== */
+#introRoot{--navy:#08122c;--ink:#eaf1ff;--muted:#9fb1d4;--warm:#f6b86b;--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;--sans:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+position:fixed;inset:0;z-index:10;overflow:hidden;background:#08122c;font-family:var(--sans);color:var(--ink);touch-action:manipulation;transition:transform 1.6s cubic-bezier(.22,.7,.2,1),opacity 1.4s ease,filter 1.4s ease,visibility 0s}
+#introRoot.leave{transform:scale(1.06)}
+/* parked: kept in the DOM (so it can be replayed in reverse) but invisible and inert */
+#introRoot.hold{opacity:0;filter:blur(10px);visibility:hidden;pointer-events:none;transition:transform 1.6s cubic-bezier(.22,.7,.2,1),opacity 1.4s ease,filter 1.4s ease,visibility 0s 1.4s}
+:where(#introRoot) button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+:where(#introRoot) :focus-visible{outline:3px solid var(--warm);outline-offset:4px;border-radius:14px}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;background:var(--navy)}
+#intro{position:absolute;inset:0;background:var(--navy)}
+.k{font-size:17px;letter-spacing:.22em;text-transform:uppercase;color:var(--warm);font-weight:600}
+
+/* controls */
+#ctrl{position:absolute;right:max(20px,2vw);top:max(16px,2.6vh);z-index:60;display:flex;gap:12px;transition:opacity .3s}
+#introRoot.leave #ctrl{opacity:0;pointer-events:none}
+.cbtn{padding:0 clamp(14px,1.4vw,24px);min-height:clamp(40px,5.2vh,58px);border-radius:999px;background:rgba(6,17,42,.6);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);font-size:clamp(14px,1.3vw,20px);letter-spacing:.03em;color:#fff;display:flex;align-items:center}
+.cbtn:hover{background:rgba(255,255,255,.18)}
+#cut{position:absolute;inset:0;background:#02060f;opacity:0;pointer-events:none;transition:opacity .4s;z-index:70}
+#cut.on{opacity:1}
+
+#world{position:absolute;left:0;top:0;width:5760px;height:1080px;will-change:transform}
+.panel{position:absolute;top:0;width:1920px;height:1080px;overflow:hidden}
+.p-us{left:0;background:linear-gradient(180deg,#e8f0f7 0,#f6ecdc 74.07%,#b9a283 74.07%,#a38c6c 100%)}
+.p-tr{left:1920px;background:linear-gradient(90deg,rgba(8,18,44,0) 0%,rgba(8,18,44,.6) 28%,#08122c 72%),linear-gradient(180deg,#e8f0f7 0,#f6ecdc 74.07%,#b9a283 74.07%,#a38c6c 100%)}
+.p-in{left:3840px;background:#08122c}
+.art{position:absolute;inset:0;width:100%;height:100%}
+/* the slow push-in scales artwork and bubbles together, so a bubble never drifts off its speaker */
+.pz{position:absolute;inset:0}
+#intro.go .p-us .pz{transform-origin:62% 62%;animation:push 9s ease-out forwards}
+@keyframes push{to{transform:scale(1.045)}}
+.region{position:absolute;top:calc(120px + var(--cy,0px));font-size:22px;letter-spacing:.34em;text-transform:uppercase;color:#cfe0ff;opacity:0;transition:opacity 1s}
+.s-flight .region{opacity:.75}
+#trailSvg{position:absolute;left:0;top:0;width:5760px;height:1080px;pointer-events:none}
+#stars{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s;will-change:transform}
+.s-flight #stars{opacity:1}.s-arrive #stars{opacity:0}
+#stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#dbe8ff;opacity:.5}
+#scrim{position:absolute;left:0;right:0;bottom:0;height:calc(300px + var(--cy,0px));background:linear-gradient(0deg,rgba(4,10,26,.8),transparent);pointer-events:none}
+#caption{position:absolute;left:0;right:0;bottom:calc(84px + var(--cy,0px));text-align:center;font:italic 42px/1.3 var(--serif);color:#fff;opacity:0;transition:opacity .5s;text-shadow:0 2px 18px rgba(0,0,0,.6);padding:0 240px;pointer-events:none}
+#caption.show{opacity:1}
+.ill{position:absolute;left:max(16px,1.6vw);bottom:max(10px,1.4vh);z-index:55;font-size:clamp(11px,.9vw,15px);letter-spacing:.08em;color:#fff;opacity:.6;pointer-events:none}
+#introRoot.leave .ill{opacity:0}
+/* position, tail offset (--tx) and fit-scale (--bs) are set by layoutBubbles() from each speaker's head in the SVG; the tail tip is the anchor point */
+.bubble{position:absolute;max-width:440px;padding:22px 30px;border-radius:38px;background:rgba(255,255,255,.96);color:#1b2438;font:italic 29px/1.35 var(--serif);filter:drop-shadow(0 14px 28px rgba(0,0,0,.26));opacity:0;transform:translateY(14px) scale(.96);scale:var(--bs,1);transform-origin:var(--tx,60px) calc(100% + 36px);transition:opacity .7s,transform .7s}
+.bubble.show{opacity:1;transform:none}
+.bubble .who{display:block;font:600 14px var(--sans);font-style:normal;letter-spacing:.16em;text-transform:uppercase;opacity:.55;margin-bottom:8px}
+.bubble::after{content:'';position:absolute;left:calc(var(--tx,60px) - 6px);top:calc(100% - 2px);width:34px;height:38px;background:rgba(255,255,255,.96);clip-path:polygon(0 0,100% 0,18% 100%)}
+.s-alert .alertUS{opacity:1}
+.alertUS{opacity:0;transition:opacity .6s}
+.okdot{fill:#4ade80;transition:fill .6s}.s-alert .okdot{fill:#f59e0b;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.gscr{position:absolute;left:756px;top:326px;width:588px;height:368px;border-radius:12px;background:#0d1b3e;padding:26px 30px;overflow:hidden}
+.gh{display:flex;align-items:center;gap:12px;font-size:25px;font-weight:600;margin-bottom:22px;min-height:34px}
+.gdot{width:14px;height:14px;border-radius:50%;background:#51607f;transition:background .5s}
+.s-arrive .gdot{background:#f59e0b;animation:blink 1s infinite}.s-record .gdot{background:#4ade80;animation:none}
+.grow{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid rgba(255,255,255,.1);font-size:21px}
+.grow span{color:var(--muted)}.grow em{font-style:normal;text-align:right}
+.grow.r{opacity:0;transition:opacity .6s}.s-record .grow.r{opacity:1}.s-record .grow.r:nth-of-type(3){transition-delay:.3s}.s-record .grow.r:nth-of-type(4){transition-delay:.6s}.s-record .grow.r:nth-of-type(5){transition-delay:.9s}
+.grow.q{opacity:0;transition:opacity .6s}.s-arrive .grow.q{opacity:1}
+.gnote{position:absolute;left:30px;bottom:14px;font-size:14px;color:var(--muted);letter-spacing:.08em}
+.team{position:absolute;left:1420px;width:360px;height:94px;border-radius:18px;background:rgba(13,27,62,.92);border:1px solid color-mix(in srgb,var(--c) 70%,transparent);border-left:6px solid var(--c);padding:10px 18px;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateX(20px);transition:opacity .7s,transform .7s}
+.team.on{opacity:1;transform:none}
+.team b{display:block;font-size:22px;font-weight:700;letter-spacing:.14em;color:var(--c);margin-bottom:3px}.team small{font-size:15px;line-height:1.25;color:var(--muted)}.team.tight{padding:6px 16px}.team.tight b{font-size:19px;margin-bottom:1px}.team.tight small{font-size:13px;line-height:1.15}
+#gLines path{fill:none;stroke-width:3;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s}
+#gLines path.on{stroke-dashoffset:0}
+#title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 220px;background:radial-gradient(ellipse at center,rgba(6,17,42,.8),rgba(6,17,42,.94));opacity:0;visibility:hidden;transition:opacity 1.2s,visibility 0s 1.2s}
+.s-title #title{opacity:1;visibility:visible;transition:opacity 1.2s}
+#title h1{font:400 128px/1.05 var(--serif);margin:26px 0 30px;letter-spacing:-.01em}
+#title h1 em{font-style:italic;color:var(--warm)}
+#title p{font-size:30px;color:var(--muted);max-width:1100px;line-height:1.45}
+#title .go{margin-top:54px;padding:0 54px;min-height:84px;border-radius:999px;background:var(--warm);color:#06112a;font-size:28px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .8s}
+#title.cta .go{opacity:1;pointer-events:auto}
+
+/* reduced motion (intro only) */
+#introRoot.reduce,#introRoot.reduce *,#introRoot.reduce *::before,#introRoot.reduce *::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+
+/* =====================================================================
+   EXPERIENCE 2 · SERVICENOW 3D ECOSYSTEM   (scoped to #eco)
+   ===================================================================== */
+#eco{--ink:#04121f;--wasabi:#62d84e;--ice:#cdf3ff;--display:'Unbounded','Trebuchet MS',system-ui,sans-serif;--text:'Instrument Sans','Segoe UI',system-ui,sans-serif;color:#fff;font-family:var(--text)}
+#eco:not(.live)>:not(#loader){visibility:hidden}
+#gl{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;display:block;z-index:0;touch-action:pan-y;will-change:opacity,transform}
+#hud{position:fixed;inset:0;z-index:2;pointer-events:none;will-change:opacity}
+#labels{position:absolute;inset:0;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;opacity:0;white-space:nowrap;font-size:clamp(11px,1vw,16px);padding:3px 10px;border-radius:99px;background:rgba(3,22,38,.78);border:1px solid rgba(190,240,255,.4);color:#e6f9ff;will-change:transform,opacity;transition:border-color .4s,color .4s,background .4s,box-shadow .4s}
+.lbl.dist{white-space:normal;text-align:center;line-height:1.15;border-radius:16px;padding:6px 14px;background:rgba(3,22,38,.8);border-width:1.5px}
+.lbl.dist b{display:block;font-family:var(--display);font-weight:500;letter-spacing:.14em;font-size:clamp(13px,1.25vw,21px)}
+.lbl.dist i{display:block;font-style:normal;opacity:.85;font-size:clamp(10px,.8vw,13px);max-width:16em;margin-top:2px}
+.lbl.dist.hot{background:rgba(8,40,66,.92);box-shadow:0 0 26px var(--hc,#fff)}
+.lbl.core{font-family:var(--display);font-weight:500;font-size:clamp(15px,1.7vw,30px);letter-spacing:.05em;padding:7px 22px;color:#fff;border-color:var(--wasabi);background:rgba(4,34,16,.7);box-shadow:0 0 22px rgba(98,216,78,.4)}
+.lbl.tag{font-size:clamp(10px,.9vw,14px);padding:2px 9px;background:rgba(3,22,38,.82)}
+.lbl.ok{border-color:var(--wasabi);color:#d9ffd2}
+#brand{position:fixed;left:3.2vw;top:3.4vh;z-index:3;font-family:var(--display);font-weight:500;font-size:clamp(12px,1.1vw,18px);letter-spacing:.06em;pointer-events:none;text-shadow:0 2px 12px #000}
+#brand i{display:inline-block;width:.7em;height:.7em;border-radius:50%;background:var(--wasabi);margin-right:.6em;box-shadow:0 0 14px var(--wasabi)}
+#hint{position:absolute;left:50%;top:3.6vh;transform:translateX(-50%);font-size:clamp(12px,1.15vw,18px);color:var(--ice);opacity:0;transition:opacity 1.2s;display:flex;gap:.7em;align-items:center;text-shadow:0 2px 10px #000}
+#hint b{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ice);animation:ping 2.2s infinite}
+@keyframes ping{0%{transform:scale(.6);opacity:1}100%{transform:scale(2.4);opacity:0}}
+#navL,#navR{position:absolute;top:2.6vh;display:flex;align-items:center;gap:10px;font-size:clamp(12px,1.1vw,18px);opacity:0;pointer-events:none;transition:opacity .5s}
+#navL{left:calc(3.2vw + 12.5em)}
+#navR{right:3.2vw}
+#navL.on,#navR.on{opacity:1;pointer-events:auto}
+.nb{min-height:48px;border-radius:99px;border:1px solid rgba(255,255,255,.35);background:rgba(3,22,38,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;font:500 clamp(13px,1.1vw,17px) var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .3s}
+.nb:hover{background:rgba(98,216,78,.25)}
+.nb.ar{width:48px;padding:0}
+.nb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#back{padding:0 22px}
+@media (max-width:760px){#navL{left:3.2vw;top:8.5vh}#navR{top:8.5vh}}
+#pp{position:fixed;right:12px;bottom:10px;z-index:40;height:36px;padding:0 14px 0 11px;border-radius:99px;border:1px solid rgba(255,255,255,.3);background:rgba(3,22,38,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font:500 13px var(--text,'Instrument Sans','Segoe UI',system-ui,sans-serif);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .3s}
+#backIntro{position:fixed;left:12px;bottom:10px;min-height:36px;padding:0 16px 0 11px;gap:6px;pointer-events:auto;z-index:7;transition:opacity .3s,background .2s}
+#backIntro.off{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility 0s .3s}
+#backIntro svg{width:15px;height:15px}
+#pp{transition:background .3s,opacity .3s}
+body.in-cards #pp{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility 0s .3s}
+#pp:hover{background:rgba(98,216,78,.25)}
+#pp svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#cap{position:absolute;left:3.2vw;bottom:5.5vh;max-width:min(27em,46vw);text-shadow:0 2px 20px rgba(1,10,18,.95),0 0 4px rgba(1,10,18,.8)}
+#kick{font-size:clamp(13px,1.35vw,22px);font-weight:600;margin-bottom:1.2vh;opacity:0;transition:opacity .5s}
+#kick small{display:block;font-weight:400;font-size:.78em;color:var(--ice);opacity:.8;margin-top:3px}
+#line{font-family:var(--display);font-weight:300;font-size:clamp(19px,2.5vw,44px);line-height:1.22;opacity:0;transition:opacity .3s,transform .5s}
+#line.out{opacity:0!important;transform:translateY(8px)}
+#rail{position:absolute;right:3.2vw;bottom:5.5vh;display:flex;gap:clamp(12px,1.8vw,30px);opacity:0;transition:opacity .6s;text-shadow:0 1px 10px rgba(1,10,18,.9)}
+#rail span{font-size:clamp(12px,1.1vw,17px);color:rgba(200,242,255,.5);display:flex;flex-direction:column;gap:8px;transition:color .4s}
+#rail span::before{content:"";display:block;width:clamp(26px,3.2vw,60px);height:3px;border-radius:2px;background:rgba(190,240,255,.25);transition:background .4s,box-shadow .4s}
+#rail span.on{color:#e4fbff}
+#rail span.on::before{background:var(--wasabi);box-shadow:0 0 12px var(--wasabi)}
+#cue{position:absolute;pointer-events:none;left:50%;bottom:2.6vh;transform:translateX(-50%);background:none;border:0;color:var(--ice);font:500 clamp(11px,.95vw,15px) var(--text);letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;opacity:0;transition:opacity .8s;text-shadow:0 2px 10px #000}
+#cue::after{content:"";width:12px;height:12px;border-right:2px solid var(--ice);border-bottom:2px solid var(--ice);transform:rotate(45deg);animation:bob 1.8s infinite}
+@keyframes bob{0%,100%{transform:translateY(-3px) rotate(45deg);opacity:.5}50%{transform:translateY(4px) rotate(45deg);opacity:1}}
+#up{position:fixed;left:50%;bottom:3vh;transform:translateX(-50%);z-index:6;min-height:44px;padding:0 20px;border-radius:99px;border:1px solid rgba(255,255,255,.3);background:rgba(3,22,38,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font:500 14px var(--text);cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s}
+#up.on{opacity:1;pointer-events:auto}
+#spacer{height:100vh;height:100dvh;pointer-events:none}
+#cards{position:relative;z-index:4;min-height:100vh;padding:12vh 5vw 14vh;overflow:hidden;pointer-events:none}
+#cards::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,18,31,0) 0,rgba(4,18,31,.92) 22%,#04121f 40%);transition:opacity .45s ease;pointer-events:none}
+html.vm-open #cards::before{opacity:0}
+#cards .blob{position:absolute;width:42vw;height:42vw;border-radius:50%;filter:blur(90px);opacity:.28;animation:drift 22s ease-in-out infinite alternate}
+#cards .b1{left:-8vw;top:18%;background:#5c8dff}
+#cards .b2{right:-10vw;top:12%;background:#62d84e;animation-delay:-6s}
+@keyframes drift{to{transform:translate(6vw,-5vh) scale(1.15)}}
+#cards h3{position:relative;text-align:center;font-family:'Barlow','Segoe UI',system-ui,sans-serif;font-weight:500;letter-spacing:.3em;font-size:clamp(11px,1.1vw,16px);color:var(--ice);margin-bottom:4vh;opacity:.85;text-transform:uppercase}
+.grid{position:relative;max-width:1500px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(16px,2vw,32px)}
+.cw{will-change:transform,opacity;opacity:0;position:relative}
+/* focus tiles — Providence-inspired: Providence Blue #00338E, Providence Green #39892F, Barlow */
+.card{--pb:#00338E;--pg:#39892F;--pgd:#2c6b24;--ink:#1d2b45;--mut:#3b4a63;pointer-events:auto;position:relative;height:100%;min-height:clamp(250px,32vh,360px);padding:clamp(22px,2.2vw,36px);border-radius:14px;overflow:hidden;z-index:1;will-change:transform;cursor:pointer;
+background:linear-gradient(180deg,#fff 0%,#f4f8fd 60%,#e6edf7 100%);border:1px solid rgba(0,51,142,.14);border-top:4px solid var(--pg);box-shadow:0 18px 40px -22px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(0,51,142,.08);transition:box-shadow .35s,border-color .35s;
+font-family:'Barlow','Segoe UI',system-ui,sans-serif;color:var(--ink);display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)}
+.card::after{content:"";position:absolute;z-index:-1;left:-10%;right:-10%;top:0;height:46%;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.35));border-radius:0 0 50% 50%/0 0 28% 28%;opacity:.8;transition:opacity .35s}   /* glossy highlight */
+.card:hover::after{opacity:1}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--mx,30%) var(--my,0%),rgba(0,51,142,.07),transparent 62%);opacity:var(--h,0)}
+.card:hover{box-shadow:0 26px 52px -22px rgba(0,0,0,.65);border-color:rgba(0,51,142,.3);border-top-color:var(--pg)}
+.card:focus-visible{outline:3px solid #7ed36f;outline-offset:4px}
+.halo{position:absolute;inset:0;border-radius:14px;box-shadow:0 0 40px -6px var(--c),0 0 0 1px var(--c);opacity:0;pointer-events:none;will-change:transform,opacity}
+.card-top{position:relative;display:flex;align-items:center;gap:12px}
+.ico{flex:none;width:clamp(40px,3.2vw,48px);height:clamp(40px,3.2vw,48px);border-radius:10px;background:var(--pb);color:#fff;display:grid;place-items:center;transition:background .3s}
+.ico svg{width:55%;height:55%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.card:hover .ico,.card:focus-visible .ico{background:var(--pg)}
+.cat{font:600 clamp(12px,.95vw,14px)/1 'Barlow',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--pgd)}
+.card h2{position:relative;font:600 clamp(24px,2.3vw,36px)/1.1 'Barlow',sans-serif;letter-spacing:-.005em;color:var(--pb)}
+.card p{position:relative;font:400 clamp(16px,1.25vw,20px)/1.5 'Barlow',sans-serif;color:var(--mut);max-width:34em}
+.card-foot{position:relative;margin-top:auto;padding-top:14px;border-top:1px solid rgba(0,51,142,.14);display:flex;align-items:center;justify-content:space-between;gap:14px;font:600 clamp(15px,1.15vw,18px)/1 'Barlow',sans-serif;letter-spacing:.02em;color:var(--pb)}
+.card-foot .pb{flex:none;width:clamp(46px,3.6vw,58px);height:clamp(46px,3.6vw,58px);border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#1a54b8 0%,var(--pb) 55%);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 14px -6px rgba(0,51,142,.6);transition:transform .4s cubic-bezier(.2,.8,.2,1),background .3s}
+.card-foot .pb svg{width:46%;height:46%;fill:#fff;margin-left:8%}
+.card:hover .card-foot .pb,.card:focus-visible .card-foot .pb{transform:scale(1.1);background:var(--pg)}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+@media (max-aspect-ratio:1/1){#rail{left:3.2vw;right:auto;bottom:2.6vh}#cap{bottom:9vh;max-width:90vw}}
+#loader{position:fixed;inset:0;z-index:20;background:#010a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.4vh;transition:opacity .9s,visibility .9s}
+#loader.pre{opacity:0}
+#loader.done{opacity:0;visibility:hidden}
+#lc{position:absolute;inset:0;width:100%;height:100%}
+#lw{position:relative;font-family:var(--display);font-weight:300;font-size:clamp(34px,6vw,104px);letter-spacing:.2em;margin-right:-.2em;text-shadow:0 0 50px rgba(98,216,78,.35)}
+#lw i{display:inline-block;width:.22em;height:.22em;border-radius:50%;background:var(--wasabi);margin-right:.35em;box-shadow:0 0 24px var(--wasabi);vertical-align:middle}
+#lb{position:relative;width:min(420px,64vw);height:4px;border-radius:4px;background:rgba(190,240,255,.14);overflow:hidden}
+#lb i{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left;will-change:transform;border-radius:4px;background:linear-gradient(90deg,#2e9e4a,#7cf06a,#d8ffd0);box-shadow:0 0 18px var(--wasabi)}
+#lt{position:relative;font-size:clamp(11px,1vw,15px);letter-spacing:.22em;color:var(--ice);text-transform:uppercase;display:flex;gap:1.4em;min-width:min(420px,64vw);justify-content:space-between}
+#fail{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;text-align:center;padding:10vw;font-size:20px;color:var(--ice);background:#010a12}
+/* labels: clean text above each structure */
+.lbl.dist{background:none;border:0;padding:0;box-shadow:none;border-radius:0;text-shadow:0 2px 10px rgba(0,8,16,.95),0 0 3px rgba(0,8,16,.9)}
+.lbl.dist b{font-size:clamp(12px,1.05vw,17px);letter-spacing:.16em;display:flex;align-items:center;justify-content:center;gap:.55em}
+.lbl.dist b::before{content:"";width:.5em;height:.5em;border-radius:50%;background:var(--hc);box-shadow:0 0 8px var(--hc)}
+.lbl.dist i{font-size:clamp(10px,.78vw,12.5px);opacity:.75;max-width:13em;transition:opacity .5s}
+.lbl.dist.hot{background:none;box-shadow:none}
+.lbl.dist.hot i{opacity:1}
+.lbl.dist.hot b{text-shadow:0 0 12px var(--hc),0 2px 10px #000}
+.lbl.core{background:none;border:0;box-shadow:none;padding:0;text-shadow:0 0 20px rgba(98,216,78,.6),0 2px 12px #000}
+/* story mode: lift the caption / stage rail above the bottom corner buttons */
+body.in-story #rail{bottom:calc(5.5vh + 46px)}
+@media (max-aspect-ratio:1/1){body.in-story #rail{bottom:2.6vh}body.in-story #cap{bottom:calc(2.6vh + 52px)}}
+/* ---- focus tiles (video launchers) ---- */
+/* ---- video popup ---- */
+.vm{--p:clamp(8px,1.6vw,24px);position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:var(--p);visibility:hidden;transition:visibility 0s .6s;overscroll-behavior:contain;touch-action:none}   /* no opacity on this wrapper: an ancestor with opacity<1 stops backdrop-filter blurring the page behind */
+.vm[hidden]{display:none}
+.vm.on{visibility:visible;transition:none}
+.vm-bd{position:absolute;inset:0;background:rgba(3,10,22,0);backdrop-filter:blur(0) saturate(1);-webkit-backdrop-filter:blur(0) saturate(1);transition:background .55s ease,backdrop-filter .55s ease,-webkit-backdrop-filter .55s ease}
+.vm.on .vm-bd{background:rgba(3,10,22,.3);backdrop-filter:blur(32px) saturate(1.15);-webkit-backdrop-filter:blur(32px) saturate(1.15)}
+.vm-box{position:relative;width:min(100%,1680px,calc((100vh - 2*var(--p))*16/9));width:min(100%,1680px,calc((100dvh - 2*var(--p))*16/9));aspect-ratio:16/9;border-radius:clamp(14px,1.6vw,26px);overflow:hidden;background:#010a12;border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 30px -14px rgba(0,0,0,.35);opacity:0;transform:translateY(20px) scale(.96);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
+.vm.on .vm-box{transform:none;opacity:1}
+.vm-box video,.vm-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;display:block}
+.vm-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vh,16px);text-align:center;padding:0 8%;background:radial-gradient(ellipse at 50% 40%,rgba(98,216,78,.16),transparent 62%),linear-gradient(160deg,#07202f,#010a12);color:#fff}
+.vm-ph svg{width:clamp(44px,6vw,84px);height:clamp(44px,6vw,84px);padding:clamp(12px,1.6vw,22px) clamp(12px,1.6vw,22px) clamp(12px,1.6vw,22px) clamp(15px,2vw,27px);border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);fill:#fff}
+.vm-ph b{font:500 clamp(18px,2.4vw,36px)/1.2 var(--display)}
+.vm-ph span{font-size:clamp(12px,1.1vw,17px);letter-spacing:.2em;text-transform:uppercase;color:var(--ice);opacity:.75}
+#vmX{position:absolute;top:clamp(8px,1.1vw,16px);right:clamp(8px,1.1vw,16px);z-index:2;width:clamp(38px,3.2vw,48px);height:clamp(38px,3.2vw,48px);border-radius:50%;border:1px solid rgba(255,255,255,.42);background:rgba(3,22,38,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .25s,transform .25s}
+#vmX:hover{background:rgba(98,216,78,.35);transform:rotate(90deg)}
+#vmX svg{width:44%;height:44%;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+</style>
+</head>
+<body>
+
+<!-- ===================== EXPERIENCE 1 : INTRO ===================== -->
+<div id="introRoot">
+<div id="stage">
+<section id="intro" aria-label="Opening story">
+ <div id="world">
+  <div class="panel p-us">
+   <div class="pz">
+   <svg class="art" viewBox="0 0 1920 1080" aria-hidden="true">
+    <defs>
+     <radialGradient id="sunG" cx="1720" cy="320" r="720" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffe2b0" stop-opacity=".85"/><stop offset="1" stop-color="#ffe2b0" stop-opacity="0"/></radialGradient>
+     <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3d6" stop-opacity=".5"/><stop offset="1" stop-color="#fff3d6" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="1920" height="1080" fill="url(#sunG)"/>
+    <rect x="1560" y="120" width="330" height="410" rx="14" fill="#cfe4f6" stroke="#fff" stroke-width="14"/>
+    <path d="M1725 120V530M1560 325H1890" stroke="#fff" stroke-width="10"/>
+    <path d="M1560 530L1890 530L1700 1040L1180 1040Z" fill="url(#beam)"/>
+    <!-- bed -->
+    <rect x="110" y="520" width="40" height="320" rx="10" fill="#b7a58a"/>
+    <rect x="140" y="700" width="640" height="96" rx="24" fill="#fff"/>
+    <rect x="140" y="796" width="640" height="26" fill="#8d7f6a"/><rect x="170" y="822" width="22" height="50" fill="#6f634f"/><rect x="730" y="822" width="22" height="50" fill="#6f634f"/>
+    <ellipse cx="236" cy="690" rx="86" ry="34" fill="#fbfbfb"/>
+    <ellipse cx="300" cy="700" rx="74" ry="38" fill="#f2f6fa"/>
+    <circle id="headPatient" cx="256" cy="640" r="46" fill="#e3b393"/>
+    <path d="M212 636c4-44 74-52 92-8-26-14-54-10-92 8z" fill="#5a4636"/>
+    <path d="M330 706Q520 656 780 696L780 790L330 790Z" fill="#9ec1dd"/>
+    <path d="M330 706Q520 656 780 696" stroke="#fff" stroke-width="8" fill="none" opacity=".7"/>
+    <!-- clinician -->
+    <rect x="918" y="736" width="40" height="180" rx="14" fill="#27384f"/><rect x="970" y="736" width="40" height="180" rx="14" fill="#27384f"/>
+    <rect x="900" y="900" width="70" height="26" rx="12" fill="#1c2b3d"/><rect x="962" y="900" width="70" height="26" rx="12" fill="#1c2b3d"/>
+    <rect x="896" y="470" width="136" height="290" rx="52" fill="#2f6f9f"/>
+    <path d="M940 470l24 60 24-60" fill="#e8f2fb"/>
+    <circle id="headClin" cx="964" cy="418" r="48" fill="#c99472"/>
+    <path d="M916 410c2-52 94-56 96-2-26-18-60-20-96 2z" fill="#2a2320"/>
+    <path d="M1020 540C1070 560 1090 590 1120 604" stroke="#2f6f9f" stroke-width="40" stroke-linecap="round" fill="none"/>
+    <circle cx="1124" cy="606" r="20" fill="#c99472"/>
+    <!-- workstation -->
+    <rect x="1290" y="720" width="20" height="170" fill="#6d7a90"/><rect x="1230" y="886" width="140" height="16" rx="8" fill="#55627a"/>
+    <circle cx="1240" cy="918" r="12" fill="#3a4559"/><circle cx="1360" cy="918" r="12" fill="#3a4559"/>
+    <rect x="1130" y="500" width="340" height="224" rx="16" fill="#1c2b45"/>
+    <rect x="1144" y="514" width="312" height="196" rx="6" fill="#eaf2fb"/>
+    <rect x="1144" y="514" width="312" height="40" fill="#dfeaf7"/>
+    <circle class="okdot" cx="1170" cy="534" r="9"/>
+    <text x="1190" y="541" font-family="Segoe UI,sans-serif" font-size="20" fill="#27384f">Scheduling</text>
+    <g fill="#c5d4e6"><rect x="1164" y="582" width="180" height="12" rx="6"/><rect x="1164" y="612" width="250" height="12" rx="6"/><rect x="1164" y="642" width="210" height="12" rx="6"/><rect x="1164" y="672" width="140" height="12" rx="6"/></g>
+    <g class="alertUS"><rect x="1144" y="566" width="312" height="62" rx="10" fill="#f59e0b"/><text x="1300" y="605" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="21" font-weight="700" fill="#2b1a00">Service slow to respond</text></g>
+   </svg>
+   <div class="bubble" id="bPatient"><span class="who">The patient · United States</span>“I just want my care to go smoothly.”</div>
+   <div class="bubble" id="bClin"><span class="who">The clinician · United States</span>“I need the systems I rely on to work when I need them.”</div>
+   </div>
+  </div>
+
+  <div class="panel p-tr">
+   <div class="region" style="left:140px">United States</div>
+   <div class="region" style="right:140px">India</div>
+  </div>
+
+  <div class="panel p-in">
+   <svg class="art" viewBox="0 0 1920 1080" aria-hidden="true">
+    <defs><radialGradient id="lamp" cx="1050" cy="520" r="760" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f6b86b" stop-opacity=".2"/><stop offset="1" stop-color="#f6b86b" stop-opacity="0"/></radialGradient></defs>
+    <rect width="1920" height="1080" fill="url(#lamp)"/>
+    <rect x="120" y="100" width="440" height="340" rx="10" fill="#0e1f47" stroke="#1b3068" stroke-width="8"/>
+    <g fill="#162a58"><rect x="140" y="300" width="70" height="130"/><rect x="220" y="240" width="80" height="190"/><rect x="310" y="330" width="60" height="100"/><rect x="380" y="200" width="90" height="230"/><rect x="480" y="290" width="60" height="140"/></g>
+    <g fill="#f6c56f" opacity=".75"><rect x="232" y="258" width="10" height="10"/><rect x="256" y="290" width="10" height="10"/><rect x="232" y="330" width="10" height="10"/><rect x="400" y="222" width="10" height="10"/><rect x="430" y="260" width="10" height="10"/><rect x="404" y="310" width="10" height="10"/><rect x="156" y="330" width="10" height="10"/><rect x="496" y="320" width="10" height="10"/></g>
+    <rect x="300" y="740" width="1320" height="26" rx="8" fill="#1e2d57" transform="translate(0,50)"/>
+    <rect x="360" y="820" width="26" height="240" fill="#16234a"/><rect x="1500" y="820" width="26" height="240" fill="#16234a"/>
+    <rect x="436" y="560" width="96" height="250" rx="30" fill="#17254a"/>
+    <rect x="468" y="590" width="140" height="220" rx="54" fill="#3d4f78"/>
+    <circle id="headEng" cx="552" cy="538" r="46" fill="#b98160"/>
+    <path d="M506 530c2-52 96-56 98-2-28-16-62-18-98 2z" fill="#1f1a18"/>
+    <path d="M502 540a50 50 0 0 1 100 0" stroke="#8b9ac4" stroke-width="7" fill="none"/>
+    <path d="M590 650C650 690 700 740 750 790" stroke="#3d4f78" stroke-width="38" stroke-linecap="round" fill="none"/>
+    <rect x="740" y="310" width="620" height="400" rx="20" fill="#0b1633" stroke="#2a3d73" stroke-width="6"/>
+    <rect x="1030" y="710" width="40" height="90" fill="#2a3d73"/><ellipse cx="1050" cy="800" rx="110" ry="16" fill="#2a3d73"/>
+    <rect x="760" y="826" width="360" height="18" rx="9" fill="#2a3d73"/>
+    <rect x="1450" y="790" width="42" height="52" rx="6" fill="#f6b86b"/>
+    <path d="M250 840V700L330 650" stroke="#8b9ac4" stroke-width="7" fill="none"/><path d="M310 640L370 690L340 710Z" fill="#f6b86b"/>
+    <path d="M310 700L260 860H400Z" fill="#f6b86b" opacity=".08"/>
+   </svg>
+   <div class="gscr">
+    <div class="gh"><i class="gdot"></i><b id="gTitle">Watching for signals…</b></div>
+    <div class="grow q"><span>Short description</span><em>Scheduling service responding slowly</em></div>
+    <div class="grow r"><span>Category</span><em>Service performance</em></div>
+    <div class="grow r"><span>Priority</span><em>High · illustrative</em></div>
+    <div class="grow r"><span>Coordinated in</span><em>ServiceNow</em></div>
+    <div class="gnote">ILLUSTRATIVE RECORD · NOT LIVE DATA</div>
+   </div>
+   <svg id="gLines" class="art" viewBox="0 0 1920 1080" aria-hidden="true" style="pointer-events:none">
+    <path pathLength="1" d="M1360 510C1390 510 1390 174 1420 174" style="stroke:#5c8dff"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 286 1420 286" style="stroke:#4fe3ff"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 398 1420 398" style="stroke:#5df2b8"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 510 1420 510" style="stroke:#9aa8ff"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 622 1420 622" style="stroke:#ffb454"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 734 1420 734" style="stroke:#ffd45c"/>
+    <path pathLength="1" d="M1360 510C1390 510 1390 846 1420 846" style="stroke:#c3e86b"/>
+   </svg>
+   <div class="team" style="top:127px;--c:#5c8dff"><b>CYBR</b><small>Cybersecurity</small></div>
+   <div class="team" style="top:239px;--c:#4fe3ff"><b>CTFS</b><small>Clinical Technology Field Services</small></div>
+   <div class="team" style="top:351px;--c:#5df2b8"><b>HI</b><small>Health Intelligence</small></div>
+   <div class="team" style="top:463px;--c:#9aa8ff"><b>ESI</b><small>Enterprise Services and Infrastructure</small></div>
+   <div class="team" style="top:575px;--c:#ffb454"><b>EBAT</b><small>Enterprise Business Applications &amp; Technology</small></div>
+   <div class="team" style="top:687px;--c:#ffd45c"><b>GFO</b><small>Global Finance Operations</small></div>
+   <div class="team" style="top:799px;--c:#c3e86b"><b>CRCA</b><small>Clinical Application Access</small></div>
+   <div class="bubble" id="bEng"><span class="who">The GCC engineer · India</span>“They may never see what we do. But our work helps keep their world moving.”</div>
+  </div>
+
+  <svg id="trailSvg" aria-hidden="true">
+   <defs><radialGradient id="orbG"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffd9a3"/><stop offset="1" stop-color="#f6b86b" stop-opacity="0"/></radialGradient></defs>
+   <path id="trail" d="M1300 610C1850 240 2500 200 2950 520S4300 880 4890 510" fill="none" stroke="#f6b86b" stroke-opacity=".3" stroke-width="16" stroke-linecap="round"/>
+   <path id="trailCore" d="M1300 610C1850 240 2500 200 2950 520S4300 880 4890 510" fill="none" stroke="#ffe2b0" stroke-width="4" stroke-linecap="round"/>
+   <circle id="orb" r="34" fill="url(#orbG)" cx="1300" cy="610" opacity="0"/>
+  </svg>
+ </div>
+ <div id="stars"></div>
+ <div id="scrim"></div>
+ <div id="caption" aria-live="polite"></div>
+ <div id="title">
+  <div class="k">Behind Every Moment of Care</div>
+  <h1>One Moment.<br><em>Many Teams.</em></h1>
+  <p>See how teams in India help enable healthcare operations in the United States, and how ServiceNow helps coordinate the work.</p>
+  <button class="go" data-act="explore">Explore the teams</button>
+ </div>
+</section>
+</div>
+
+<div id="ctrl">
+ <button class="cbtn" data-act="skip" id="ctrlSkip">Skip intro ›</button>
+ <button class="cbtn" data-act="replay">↺ Replay intro</button>
+ <button class="cbtn" data-act="motion" id="ctrlMotion" aria-pressed="false">Motion: On</button>
+</div>
+<div id="cut"></div>
+<div class="ill">Illustrative scenario · non-clinical · not live data</div>
+</div>
+
+<!-- ===================== EXPERIENCE 2 : ECOSYSTEM ===================== -->
+<button id="pp" aria-label="Pause animations"></button>
+<div id="eco" hidden>
+<canvas id="gl"></canvas>
+<div id="brand"><i></i>ServiceNow</div>
+<div id="hud">
+ <div id="labels"></div>
+ <div id="hint"><b></b>Touch a pillar to explore</div>
+ <div id="navL"><button class="nb ar" id="prev" aria-label="Previous pillar"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="nb" id="back">All Pillars</button></div>
+ <div id="navR"><button class="nb ar" id="next" aria-label="Next pillar"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
+ <div id="cap"><div id="kick"></div><div id="line"></div></div>
+ <div id="rail"></div>
+ <button id="cue">Scroll</button>
+</div>
+<div id="spacer"></div>
+<section id="cards">
+ <div class="blob b1"></div><div class="blob b2"></div>
+ <h3>One ServiceNow ecosystem · Four ways to explore</h3>
+ <div class="grid">
+ <div class="cw"><article class="card" data-tile="discover" role="button" tabindex="0" aria-haspopup="dialog" style="--c:#39892F">
+   <div class="card-top"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><span class="cat">Discover</span></div>
+   <h2>Discover ServiceNow</h2>
+   <p>What ServiceNow is and how it connects people, processes and technology.</p>
+   <div class="card-foot"><span>Watch the video</span><span class="pb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></svg></span></div></article></div>
+ <div class="cw"><article class="card" data-tile="explore" role="button" tabindex="0" aria-haspopup="dialog" style="--c:#39892F">
+   <div class="card-top"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 3.5l1.9 5 5 1.9-5 1.9-1.9 5-1.9-5-5-1.9 5-1.9z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span class="cat">Explore</span></div>
+   <h2>Explore What&rsquo;s Possible</h2>
+   <p>Explore automation, AI, integrations, capabilities and workflows.</p>
+   <div class="card-foot"><span>Watch the video</span><span class="pb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></svg></span></div></article></div>
+ <div class="cw"><article class="card" data-tile="learn" role="button" tabindex="0" aria-haspopup="dialog" style="--c:#39892F">
+   <div class="card-top"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M10 9v4.6l4-2.3z"/><path d="M8 21h8"/></svg></span><span class="cat">Learn</span></div>
+   <h2>Watch &amp; Learn</h2>
+   <p>Short demos and videos showcasing ServiceNow in action.</p>
+   <div class="card-foot"><span>Watch the video</span><span class="pb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></svg></span></div></article></div>
+ <div class="cw"><article class="card" data-tile="enterprise" role="button" tabindex="0" aria-haspopup="dialog" style="--c:#39892F">
+   <div class="card-top"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M12 7.2v4M12 11.2L5.8 16M12 11.2l6.2 4.8"/></svg></span><span class="cat">Enterprise</span></div>
+   <h2>Enterprise View</h2>
+   <p>How ServiceNow connects teams, services and operations across an enterprise.</p>
+   <div class="card-foot"><span>Watch the video</span><span class="pb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></svg></span></div></article></div>
+ </div>
+</section>
+<button id="up">↑ Back to the ecosystem</button>
+<button id="backIntro" class="nb" aria-label="Back to introduction"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back to intro</button>
+
+<div id="vm" class="vm" role="dialog" aria-modal="true" aria-label="Video" aria-hidden="true" hidden>
+ <div class="vm-bd"></div>
+ <div class="vm-box"><div id="vmS"></div><button id="vmX" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+</div>
+
+<div id="loader" class="pre"><canvas id="lc"></canvas><div id="lw"><i></i>ServiceNow</div><div id="lb"><i></i></div><div id="lt"><span id="ls">Starting</span><span id="lp">0%</span></div></div>
+<div id="fail">This experience needs WebGL and an internet connection to load Three.js.</div>
+</div>
+
+<script>
+(()=>{
+'use strict';
+
+/* =====================================================================
+   TILE VIDEO SOURCES — set the real URLs here (one per tile).
+   `src` accepts a direct video file (.mp4 / .webm / .ogg), a YouTube link or a Vimeo link.
+   An empty `src` shows a "Video coming soon" placeholder in the popup. `poster` is optional (direct files only).
+   ===================================================================== */
+const TILE_VIDEOS={
+  discover:  {title:'Discover ServiceNow',     src:'', poster:''},
+  explore:   {title:'Explore What\u2019s Possible', src:'', poster:''},
+  learn:     {title:'Watch & Learn',           src:'', poster:''},
+  enterprise:{title:'Enterprise View',         src:'', poster:''}
+};
+
+/* =====================================================================
+   EXPERIENCE 2 · ECOSYSTEM — runs once, only when the intro hands over
+   ===================================================================== */
+/* centralized pause / resume for the whole portal (intro timeline, ecosystem render loop, CSS animations) */
+let paused=false;
+const PP=document.getElementById('pp'),ICO_PAUSE='<svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>',ICO_PLAY='<svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z" fill="currentColor"/></svg>';
+function setPaused(v){paused=v;document.body.classList.toggle('paused',v);PP.innerHTML=(v?ICO_PLAY:ICO_PAUSE)+'<span>'+(v?'Play':'Pause')+'</span>';PP.setAttribute('aria-label',v?'Play animations':'Pause animations')}
+PP.addEventListener('click',()=>setPaused(!paused));
+setPaused(false);
+
+function initEcosystem(){
+const $=id=>document.getElementById(id);
+if(!window.THREE){$('fail').style.display='flex';return}
+const V3=THREE.Vector3,V2=THREE.Vector2,Col=THREE.Color,ADD=THREE.AdditiveBlending;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const sm=x=>{x=clamp(x);return x*x*(3-2*x)};
+const seg=(t,a,b)=>sm((t-a)/(b-a));
+const angDiff=(a,b)=>((a-b+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;
+const WASABI=0x62d84e,ICE=0xcdf3ff,RED=0xff4d4d,CYAN=0x4fe3ff,PI=Math.PI;
+const R=14.5,PR=4.8,CS=1.35,CORE_Y=5.2,DONE=12.2,END=17.5,SPH=[.4,4.5,8.5,12.2];
+/* random slot per pillar on every page load */
+const SLOT=[0,1,2,3,4,5,6];for(let k=6;k>0;k--){const j=Math.floor(Math.random()*(k+1));[SLOT[k],SLOT[j]]=[SLOT[j],SLOT[k]]}
+const SPIN=[.12,-.09,.14,-.11,.1,-.13,.08]; /* gentle per-pillar rotation speeds (rad/s) */
+const OCC_R=4.4,OCC_OFF=6; /* depth mask behind the central ServiceNow element */
+
+/* ---------- pillar content ---------- */
+const PIL=[
+{ab:'CYBR',name:'Cybersecurity',col:0x5c8dff,tech:'ServiceNow IRM · risk workflows',stages:['Detect','Assess','Remediate','Govern'],lines:['Cyber risk signals appear across the environment.','ServiceNow IRM assesses and prioritizes the risk.','Remediation workflows are triggered.','Stronger governance, better visibility, faster remediation.']},
+{ab:'CTFS',name:'Clinical Technology Field Services',col:0x4fe3ff,tech:'ServiceNow ITOM · CMDB · infrastructure workflows',stages:['Discover','Map','Monitor','Support'],lines:['Cloud, network and core technology services come online.','ServiceNow ITOM and CMDB map every component.','Relationships and health become visible.','Improved infrastructure visibility and operational support.']},
+{ab:'HI',name:'Health Intelligence',col:0x5df2b8,tech:'ServiceNow clinical application support workflows',stages:['Request','Route','Resolve','Confirm'],lines:['A caregiver needs help with a clinical application.','The request moves through ServiceNow support workflows.','Access and issues are routed and resolved.','Improved caregiver support and service consistency.']},
+{ab:'ESI',name:'Enterprise Services and Infrastructure',col:0x9aa8ff,tech:'ServiceNow ITSM · CMDB · technology operations',stages:['Incident','Connect','Coordinate','Resolve'],lines:['A service incident is raised.','ServiceNow ITSM and CMDB link it to the affected components.','The workflow is coordinated across technology operations.','Improved incident resolution, service visibility and accountability.']},
+{ab:'EBAT',name:'Enterprise Business Applications & Technology',col:0xffb454,tech:'ServiceNow enterprise workflows and automation',stages:['Request','Digitize','Automate','Complete'],lines:['A manual request arrives, such as Enterprise Fax.','ServiceNow turns it into a structured digital workflow.','Automated stages move the request forward.','Reduced manual work and faster turnaround.']},
+{ab:'GFO',name:'Global Finance Operations',col:0xffd45c,tech:'ServiceNow Finance Workflow Automation',stages:['Submit','Route','Process','Complete'],lines:['Finance requests and Journal Entries come in.','ServiceNow Finance Workflow Automation routes them.','Processing runs with minimal manual intervention.','Streamlined finance operations with less manual effort.']},
+{ab:'CRCA',name:'Clinical Application Access',col:0xc3e86b,tech:'ServiceNow clinical application access workflows',stages:['Request','Fulfil','Secure','Track SLA'],lines:['A clinician requests access to an application.','ServiceNow manages the request and its fulfilment.','Secure access is granted through a standard process.','Standardized access fulfilment and improved SLA tracking.']}];
+
+/* ---------- renderer / scene ---------- */
+const canvas=$('gl');
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'})}catch(e){$('fail').style.display='flex';return}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.setClearColor(0x04182a);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x04182a,0.0065);
+const camera=new THREE.PerspectiveCamera(42,1,.1,300);
+scene.add(new THREE.HemisphereLight(0xc4e4ff,0x1a3a58,1.55));
+const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(-10,25,14);scene.add(sun);
+const fill=new THREE.DirectionalLight(0x9fd0ff,.55);fill.position.set(10,12,-14);scene.add(fill);
+const coreLight=new THREE.PointLight(WASABI,3,60);coreLight.position.set(0,6,0);scene.add(coreLight);
+
+/* ---------- helpers ---------- */
+const GT=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
+function sprite(color,size,op=1){const m=new THREE.SpriteMaterial({map:GT,color,transparent:true,blending:ADD,depthWrite:false,opacity:op,fog:false});const s=new THREE.Sprite(m);s.scale.setScalar(size);return s}
+function lineMat(color,op){return new THREE.LineBasicMaterial({color,transparent:true,opacity:op,blending:ADD,depthWrite:false})}
+function mkNode(color,size){const g=new THREE.Group();const core=new THREE.Mesh(new THREE.SphereGeometry(size*.5,14,14),new THREE.MeshBasicMaterial({color,transparent:true}));const halo=sprite(color,size*6,.85);g.add(core,halo);g.userData={core,halo};g.visible=false;scene.add(g);return g}
+function setNode(g,vis,color){g.visible=vis>.015;if(!g.visible)return;g.scale.setScalar(Math.max(vis,.001));g.userData.halo.material.opacity=.9*Math.min(vis,1);if(color!==undefined){g.userData.core.material.color.set(color);g.userData.halo.material.color.set(color)}}
+
+/* ---------- labels: projected from each object's real world position ---------- */
+const labelRoot=$('labels'),labels=[];
+function mkLabel(base=''){const el=document.createElement('div');el.className=('lbl '+base).trim();labelRoot.appendChild(el);
+const L={el,base,pos:new V3(),vis:0,txt:'',shown:false,w:0,h:0,cx:0,cy:0,cy0:0,cls:'',
+setText(t){if(t!==this.txt){this.txt=t;el.textContent=t;this.w=0}},
+setHtml(h){if(h!==this.txt){this.txt=h;el.innerHTML=h;this.w=0}},
+setCls(c){if(this.cls!==c){this.cls=c;el.className=('lbl '+this.base+' '+c).replace(/\s+/g,' ').trim();this.w=0}}};labels.push(L);return L}
+const tmpV=new V3(),visL=[];const fA=new V3(),fB=new V3();
+function updateLabels(){
+const W=innerWidth,H=innerHeight,padX=W*.025,top=H*.09,bot=H*(st.on?.2:.09);
+visL.length=0;
+for(const L of labels){if(L.vis<.03){if(L.shown){L.el.style.opacity=0;L.shown=false}continue}
+tmpV.copy(L.pos).project(camera);
+if(tmpV.z>1||Math.abs(tmpV.x)>1.1||Math.abs(tmpV.y)>1.1){L.el.style.opacity=0;L.shown=false;continue}
+if(!L.w){L.w=L.el.offsetWidth;L.h=L.el.offsetHeight}
+L.cx=(tmpV.x*.5+.5)*W;L.cy=(-tmpV.y*.5+.5)*H-L.h*.5-8;L.cy0=L.cy;visL.push(L)}
+for(let pass=0;pass<2;pass++)for(let i=1;i<visL.length;i++){const a=visL[i];
+for(let j=0;j<i;j++){const b=visL[j];
+if(Math.abs(a.cx-b.cx)<(a.w+b.w)/2+6&&Math.abs(a.cy-b.cy)<(a.h+b.h)/2+3)a.cy=Math.max(a.cy0-50,Math.min(a.cy,b.cy-(a.h+b.h)/2-3))}}
+for(const L of visL){
+const cx=clamp(L.cx,padX+L.w/2,W-padX-L.w/2),cy=clamp(L.cy,top+L.h/2,H-bot-L.h/2);
+L.el.style.transform='translate('+(cx-L.w/2).toFixed(1)+'px,'+(cy-L.h/2).toFixed(1)+'px)';
+L.el.style.opacity=Math.min(1,L.vis).toFixed(2);L.shown=true}}
+
+/* ---------- state ---------- */
+let ready=false,T=0,introT=0,hover=-1,spS=0,active=true,modalOpen=false,vmBack=0,backShown=null;
+/* reverse-transition state: mode 0 = normal, 1 = retreating (introT runs backwards), 2 = parked at zero */
+const rev={mode:0,speed:1.95,fired:false,cb:null,res:null};
+let ring=0,ringV=0,ringApplied=0,lastMoveT=0; /* hand-driven rotation of the pillar ring (overview) */
+let core,coreMat,coreHalo,coreRings,coreIco,coreInner,shield,agentsOrbit,base,ped,beam,coreLabel,coreHit,ground,groundMat,occ,corePos=new V3(0,CORE_Y,0);
+const pillars=[],streams=[],ripples=[],ripU=[new V3(0,0,-99),new V3(0,0,-99),new V3(0,0,-99),new V3(0,0,-99)];
+let ripIdx=0;
+function addRipple(x,z){ripU[ripIdx].set(x,z,T);ripples.push({x,z,t0:T});ripIdx=(ripIdx+1)%4;while(ripples.length>4)ripples.shift()}
+const st={on:false,t:0,P:null,i:-1,fl:[],pts:null};
+let nextStory=0;
+const setNav=on=>{document.body.classList.toggle('in-story',on);$('navL').classList.toggle('on',on);$('navR').classList.toggle('on',on)};
+
+/* ---------- build: core + ground ---------- */
+function buildCore(){
+groundMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:ADD,extensions:{derivatives:true},
+uniforms:{uT:{value:0},uReveal:{value:0},uRip:{value:ripU},uPtr:{value:new V3()},uCol:{value:new Col(CYAN)}},
+vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+fragmentShader:`varying vec3 vW;uniform float uT,uReveal;uniform vec3 uRip[4];uniform vec3 uPtr;uniform vec3 uCol;
+float grid(vec2 p,float s){vec2 q=p/s;vec2 g=abs(fract(q-.5)-.5)/max(fwidth(q),vec2(.0001));return 1.-min(min(g.x,g.y),1.);}
+void main(){float r=length(vW.xz);float rv=smoothstep(uReveal,uReveal-9.,r);
+float a=(grid(vW.xz,2.)*.1+grid(vW.xz,10.)*.26)*rv;
+float rp=0.;for(int i=0;i<4;i++){float age=uT-uRip[i].z;if(age>0.&&age<4.){float d=length(vW.xz-uRip[i].xy);float w=1.1+age*.9;rp+=smoothstep(w,0.,abs(d-age*14.))*(1.-age/4.);}}
+float pd=length(vW.xz-uPtr.xz);float pp=(smoothstep(.3,0.,abs(pd-7.))*.3+smoothstep(7.,0.,pd)*.08)*uPtr.y;
+float edge=smoothstep(48.,30.,r);
+float k=(a+rp*.8+pp)*edge;gl_FragColor=vec4(uCol*k,clamp(k,0.,1.));}`});
+ground=new THREE.Mesh(new THREE.PlaneGeometry(130,130),groundMat);ground.rotation.x=-PI/2;ground.renderOrder=-2;scene.add(ground);
+core=new THREE.Group();core.position.copy(corePos);scene.add(core);
+coreMat=new THREE.MeshBasicMaterial({color:WASABI});
+coreInner=new THREE.Mesh(new THREE.DodecahedronGeometry(.85,0),coreMat);
+coreHalo=sprite(WASABI,7,.6);
+coreIco=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.7,1)),lineMat(WASABI,.9));
+coreRings=[];
+for(let i=0;i<3;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(2.5+i*.55,.024,8,110),new THREE.MeshBasicMaterial({color:i==1?0xffffff:WASABI,transparent:true,opacity:.75,blending:ADD,depthWrite:false}));r.rotation.set(i*1.05+.4,i*.6,i*.3);core.add(r);coreRings.push(r)}
+shield=new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(5.2,2)),lineMat(0x7fe3ff,.05));
+core.add(coreInner,coreHalo,coreIco,shield);
+agentsOrbit=[]; /* decorative orbiting particles removed */
+base=new THREE.Group();scene.add(base);
+base.add(new THREE.Mesh(new THREE.CylinderGeometry(3.3,3.8,.32,48),new THREE.MeshStandardMaterial({color:0x0f4258,roughness:.5,metalness:.4,emissive:WASABI,emissiveIntensity:.12})));
+[[3.5,.8],[4.6,.4],[2.3,.7]].forEach(([r,o],i)=>{const t=new THREE.Mesh(new THREE.TorusGeometry(r,.035,6,96),new THREE.MeshBasicMaterial({color:WASABI,transparent:true,opacity:o,blending:ADD,depthWrite:false}));t.rotation.x=PI/2;t.position.y=.2+i*.01;base.add(t)});
+ped=new THREE.Mesh(new THREE.CylinderGeometry(.12,.7,3.1,20,1,true),new THREE.MeshBasicMaterial({color:WASABI,transparent:true,opacity:.15,blending:ADD,depthWrite:false,side:THREE.DoubleSide}));ped.position.y=1.7;base.add(ped);
+beam=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1,4,1,true),new THREE.MeshBasicMaterial({visible:false}));beam.visible=false;scene.add(beam); /* vertical light beam removed */
+coreHit=new THREE.Mesh(new THREE.CylinderGeometry(5.2,5.2,10,12),new THREE.MeshBasicMaterial({visible:false}));coreHit.position.y=5;scene.add(coreHit);
+/* depth-only mask: a camera-facing disc placed just behind the core. It writes depth but no colour,
+   so anything that sits behind the central element (pillar parts, glows, links) is cut away
+   while the visible parts of the pillars and the core itself are untouched. */
+occ=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshBasicMaterial({colorWrite:false,side:THREE.DoubleSide,fog:false}));
+occ.renderOrder=-5;occ.frustumCulled=false;occ.visible=false;scene.add(occ);
+coreLabel=mkLabel('core');coreLabel.setText('ServiceNow');coreLabel.pos.set(0,.9,0)}
+const occFwd=new V3(),occA=new V3(),occB=new V3(),occR=new V3();
+function placeOcc(app){
+occ.visible=!st.on&&app>.05;if(!occ.visible){pillars.forEach(P=>P.occl=false);return}
+const cp=camera.position,D=cp.distanceTo(corePos),s=Math.max(app,.001);
+occFwd.copy(corePos).sub(cp).normalize();
+const dist=D+OCC_OFF*s,ang=Math.asin(Math.min(.95,OCC_R*s/D));
+occ.position.copy(cp).addScaledVector(occFwd,dist);
+occ.quaternion.copy(camera.quaternion);
+occ.scale.setScalar(dist*Math.tan(ang));
+camera.updateMatrixWorld();
+const asp=innerWidth/innerHeight;
+occA.copy(corePos).project(camera);
+occB.copy(corePos).addScaledVector(occR.set(1,0,0).applyQuaternion(camera.quaternion),OCC_R*s).project(camera);
+const rN=Math.hypot((occB.x-occA.x)*asp,occB.y-occA.y)*1.0;
+pillars.forEach(P=>{occB.set(P.center.x,P.top*.55,P.center.z);const far=cp.distanceTo(occB)>D;occB.project(camera);
+P.occl=far&&Math.hypot((occB.x-occA.x)*asp,occB.y-occA.y)<rN})}
+
+/* ---------- build: pillars (each with its own architecture) ---------- */
+function reg(P,m,b,k){P.regs.push({m,b,k})}
+function mk(P,geo,x,y,z,o={}){const e=o.e===undefined?.3:o.e;
+const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:o.c||0x24506f,emissive:P.col,emissiveIntensity:e,roughness:.4,metalness:.35,flatShading:true}));reg(P,m.material,e,'e');
+m.position.set(x,y,z);if(o.r)m.rotation.set(o.r[0],o.r[1],o.r[2]);
+if(!o.noEdge){const l=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:P.col,transparent:true,opacity:.95}));reg(P,l.material,.95,'o');m.add(l)}
+P.g.add(m);return m}
+function wr(P,geo,x,y,z,op){const l=new THREE.LineSegments(new THREE.WireframeGeometry(geo),lineMat(P.col,op));reg(P,l.material,op,'o');l.position.set(x,y,z);P.g.add(l);return l}
+function tor(P,r,tube,x,y,z,op,rot){const m=new THREE.Mesh(new THREE.TorusGeometry(r,tube,8,64),new THREE.MeshBasicMaterial({color:P.col,transparent:true,opacity:op,blending:ADD,depthWrite:false}));reg(P,m.material,op,'o');m.position.set(x,y,z);if(rot)m.rotation.set(rot[0],rot[1],rot[2]);P.g.add(m);return m}
+function hexRing(P,r,tube,x,y,z,op,rot){const m=new THREE.Mesh(new THREE.TorusGeometry(r,tube,6,6),new THREE.MeshBasicMaterial({color:P.col,transparent:true,opacity:op,blending:ADD,depthWrite:false}));reg(P,m.material,op,'o');m.position.set(x,y,z);if(rot)m.rotation.set(rot[0],rot[1],rot[2]);P.g.add(m);return m}
+function glass(P,geo,x,y,z,op,r){const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:P.col,transparent:true,opacity:op,blending:ADD,depthWrite:false,side:THREE.DoubleSide}));reg(P,m.material,op,'o');m.position.set(x,y,z);if(r)m.rotation.set(r[0],r[1],r[2]);P.g.add(m);return m}
+function lines(P,pts,op,loop){const g=new THREE.BufferGeometry().setFromPoints(pts);const l=loop?new THREE.Line(g,lineMat(P.col,op)):new THREE.LineSegments(g,lineMat(P.col,op));reg(P,l.material,op,'o');P.g.add(l);return l}
+function actor(P,geo,x,y,z,o={}){const p={color:P.col,transparent:true,opacity:.95,side:THREE.DoubleSide};if(o.add){p.blending=ADD;p.depthWrite=false}
+const m=new THREE.MeshBasicMaterial(p);reg(P,m,o.op||.95,'o');const me=new THREE.Mesh(geo,m);me.position.set(x,y,z);if(o.r)me.rotation.set(o.r[0],o.r[1],o.r[2]);P.g.add(me);
+const a={m,me,base:new Col(P.col).multiplyScalar(.55)};m.color.copy(a.base);P.act.push(a);return me}
+
+const B=[
+/* CYBR */
+P=>{mk(P,new THREE.CylinderGeometry(1,1.7,5.4,6),0,3,0);mk(P,new THREE.ConeGeometry(.45,1.6,6),0,6.5,0);
+wr(P,new THREE.SphereGeometry(4.3,20,10,0,PI*2,0,PI/2),0,.2,0,.45);
+P.scan=tor(P,4.2,.035,0,.5,0,.9,[PI/2,0,0]);
+const S=[[-3.4,1.6],[3.4,1.6],[-2.7,-2.7],[2.7,-2.7]];
+S.forEach(([x,z])=>{mk(P,new THREE.ConeGeometry(.5,1.9,6),x,1.15,z);actor(P,new THREE.OctahedronGeometry(.33),x,2.4,z)});
+actor(P,new THREE.IcosahedronGeometry(.42,0),0,7.7,0);
+P.top=8.2;P.pe=[0,2.6,3.4];
+const sp=S.map(([x,z])=>[x,2.4,z]);
+P.fl=[...sp.map((a,k)=>({a,b:'c',t0:2.4+k*.4,t1:4+k*.4,col:RED,arc:2})),{a:'c',b:[0,7.7,0],t0:5,t1:6.8,col:ICE,arc:2},
+...sp.map((b,k)=>({a:'c',b,t0:8.6+k*.4,t1:10.2+k*.4,col:WASABI,arc:2}))];
+P.lights=[[0,2.4],[1,2.8],[2,3.2],[3,3.6],[4,5]];P.alert=[[0,2.2,4.6,RED],[1,2.6,5,RED],[2,3,5.4,RED],[3,3.4,5.8,RED]];P.tags=[];
+P.anim=(t,s)=>{const ph=(t*(s>=0?.22:.08))%1,tri=ph<.5?ph*2:2-ph*2;P.scan.position.y=.4+tri*tri*(3-2*tri)*3.6}},
+/* CTFS */
+P=>{const cl=[[-1.2,0,0,1.1],[0,.4,0,1.4],[1.3,0,.1,1.1],[0,0,.8,.9]];
+cl.forEach(([x,y,z,r])=>{const w=wr(P,new THREE.IcosahedronGeometry(r,1),x,6.4+y,z,.55);w.scale.y=.65});
+actor(P,new THREE.IcosahedronGeometry(.95,1),0,6.4,0,{add:true,op:.55});
+mk(P,new THREE.CylinderGeometry(.12,.35,5.2,8),-3.2,2.9,-1.5);[[.75,2],[.58,3.4],[.42,4.8]].forEach(([r,y])=>tor(P,r,.03,-3.2,y,-1.5,.8,[PI/2,0,0]));
+actor(P,new THREE.SphereGeometry(.32,12,12),-3.2,5.7,-1.5);
+const TK=[-2.6,-.9,.8].map(z=>[2.9,1.9,z]);
+TK.forEach(([x,y,z])=>{mk(P,new THREE.CylinderGeometry(.85,.85,1.6,16),x,1,z);actor(P,new THREE.CylinderGeometry(.72,.72,.08,16),x,y,z)});
+mk(P,new THREE.OctahedronGeometry(.75),0,1.4,2.9);actor(P,new THREE.OctahedronGeometry(.3),0,1.4,2.9);
+const N=[0,1.4,2.9],CL=[0,6.4,0],MS=[-3.2,5.7,-1.5],v=a=>new V3(a[0],a[1],a[2]);
+const pr=[[CL,MS],[CL,TK[0]],[CL,TK[1]],[CL,TK[2]],[N,CL],[N,TK[2]],[N,MS]];
+const pts=[];pr.forEach(([a,b])=>pts.push(v(a),v(b)));
+P.netM=lineMat(P.col,.3);P.g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),P.netM));
+P.top=8;P.pe=[0,2.4,3.6];
+P.fl=[{a:N,b:CL,t0:2.2,t1:3.6,col:P.col,arc:2.5},{a:MS,b:CL,t0:2.6,t1:4,col:P.col,arc:1.5},{a:'c',b:CL,t0:5,t1:6.4,col:ICE,arc:2},{a:'c',b:MS,t0:5.6,t1:7,col:ICE,arc:2},{a:'c',b:TK[0],t0:6.2,t1:7.6,col:ICE,arc:2},{a:'c',b:TK[1],t0:6.6,t1:8,col:ICE,arc:2},{a:'c',b:TK[2],t0:7,t1:8.4,col:ICE,arc:2},
+{a:TK[0],b:'c',t0:9,t1:10.4,col:WASABI,arc:2},{a:TK[2],b:'c',t0:9.8,t1:11.2,col:WASABI,arc:2},{a:CL,b:'c',t0:10.2,t1:11.6,col:WASABI,arc:2}];
+P.lights=[[5,2.2],[0,2.6],[1,2.8],[2,5.6],[3,6.2],[4,6.8]];P.alert=[];
+P.tags=[['Cloud',[0,7.6,0],2.4],['Network',[0,2.4,2.9],2.4],['Core services',[2.9,3.2,-.9],5.6]];
+P.anim=(t,s)=>{P.netM.opacity=Math.min(1,(.32+.68*(s<0?0:seg(s,4.5,8)))*P.lum*.9)}},
+/* HI */
+P=>{mk(P,new THREE.BoxGeometry(5.2,2.4,1.7),0,1.35,0);mk(P,new THREE.BoxGeometry(1.7,2.4,5.2),0,1.35,0);
+mk(P,new THREE.CylinderGeometry(.95,.95,2.2,24),0,3.6,0);
+glass(P,new THREE.PlaneGeometry(4.2,2.2),0,5.7,-2.8,.16);
+const fr=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(4.2,2.2)),new THREE.LineBasicMaterial({color:P.col,transparent:true,opacity:.95}));reg(P,fr.material,.95,'o');fr.position.set(0,5.7,-2.8);P.g.add(fr);
+P.ecg=[];for(let i=0;i<40;i++){const sp=[.4,-.3,1,-.4,.15][i-16];P.ecg.push(new V3(-1.9+i*3.8/39,5+(sp!==undefined&&i>=16&&i<=20?sp*.5:0),-2.78))}
+lines(P,P.ecg,.95,true);
+P.pulse=sprite(0xffffff,.9,.95);P.g.add(P.pulse);
+[-1.3,0,1.3].forEach(x=>actor(P,new THREE.PlaneGeometry(.9,.7),x,6.1,-2.76));
+actor(P,new THREE.TorusGeometry(1.1,.07,8,40),0,.5,3,{r:[PI/2,0,0],add:true});
+P.top=7.5;P.pe=[0,2.2,3.7];
+const RG=[0,.9,3],T=[[-1.3,6.1,-2.76],[0,6.1,-2.76],[1.3,6.1,-2.76]];
+P.fl=[{a:RG,b:'c',t0:2.2,t1:3.9,col:0xffc24d,arc:2},{a:'c',b:T[1],t0:4.8,t1:6.2,col:ICE,arc:2},{a:'c',b:T[0],t0:5.4,t1:6.8,col:ICE,arc:2},{a:'c',b:T[2],t0:6,t1:7.4,col:ICE,arc:2},
+{a:T[0],b:RG,t0:8.6,t1:10.2,col:WASABI,arc:2},{a:T[1],b:RG,t0:9,t1:10.6,col:WASABI,arc:2},{a:'c',b:RG,t0:9.6,t1:11.4,col:WASABI,arc:2}];
+P.lights=[[3,2.2],[1,4.8],[0,5.4],[2,6.2]];P.alert=[[3,2,4.4,0xffc24d]];
+P.tags=[['Caregiver',[0,1.8,3],2.2],['Clinical application',[0,7.2,-2.8],4.4]];
+P.anim=(t,s)=>{if(s<0){P.pulse.visible=false;return}P.pulse.visible=true;const i=Math.floor(((t*.4)%1)*39);const p=P.ecg[i];P.pulse.position.set(p.x,p.y,p.z)}},
+/* ESI — data stack, server tower and operations desk */
+P=>{
+const DX=-2.2,DZ=-.6,TX=2,TZ=-.8;
+mk(P,new THREE.BoxGeometry(4.2,.6,1.8),0,.45,2.1,{c:0x0b2a44,e:.2});
+[.65,1.5,2.35].forEach(y=>{mk(P,new THREE.CylinderGeometry(1.5,1.5,.7,32),DX,y,DZ,{c:0x1b4b78,e:.3});
+actor(P,new THREE.TorusGeometry(1.5,.06,8,48),DX,y+.36,DZ,{r:[PI/2,0,0],add:true})});   /* act 0,1,2 */
+[0,1,2,3].forEach(i=>mk(P,new THREE.BoxGeometry(1.7,1.1,1.7),TX,.95+i*1.2,TZ,{c:0x1b4b78,e:.3}));
+[0,1,2,3].forEach(i=>actor(P,new THREE.PlaneGeometry(1.3,.14),TX,.95+i*1.2,TZ+.86,{add:true,op:.9}));   /* act 3-6 */
+[-.95,.95].forEach(x=>{mk(P,new THREE.BoxGeometry(1.2,.75,.08),x,1.2,2.3,{r:[-.4,0,0],c:0x0b2a44,e:.3});
+actor(P,new THREE.PlaneGeometry(1,.58),x,1.2+.035,2.3+.07,{r:[-.4,0,0]})});   /* act 7,8 */
+actor(P,new THREE.SphereGeometry(.45,16,16),TX,5.75,TZ);   /* act 9 */
+mk(P,new THREE.OctahedronGeometry(.45),0,1.1,3.8);actor(P,new THREE.OctahedronGeometry(.22),0,1.1,3.8);   /* act 10 */
+P.top=6.8;P.pe=[0,2.4,3.9];
+const N0=[0,1.1,3.8],D0=[DX,1.0,DZ],D2=[DX,2.7,DZ],TW=[TX,3.1,TZ],OR=[TX,5.75,TZ],MN=[0,1.5,2.3];
+P.fl=[{a:N0,b:'c',t0:2.2,t1:3.8,col:RED,arc:2},{a:'c',b:D0,t0:4.8,t1:6.2,col:ICE,arc:2},{a:'c',b:D2,t0:5.6,t1:7,col:ICE,arc:2},{a:'c',b:TW,t0:6.4,t1:7.8,col:ICE,arc:2},{a:'c',b:OR,t0:7.2,t1:8.6,col:ICE,arc:2},{a:'c',b:MN,t0:8.6,t1:10,col:ICE,arc:2},{a:'c',b:N0,t0:10.2,t1:11.8,col:WASABI,arc:2}];
+P.lights=[[10,2.2],[0,4.8],[1,5.2],[2,5.6],[3,6.4],[4,6.8],[5,7.2],[6,7.6],[9,8.2],[7,8.6],[8,9]];P.alert=[[10,2,10.4,RED]];
+P.tags=[['Incident',[0,2.4,3.8],2.2],['CMDB',[DX,3.6,DZ],4.6]];
+P.anim=()=>{}},
+/* EBAT */
+P=>{const M=[[-3.4,1.8,-.6,.55],[-1.15,2.5,-1.9,.25],[1.2,3.2,-1.9,-.25],[3.4,3.9,-.6,-.55]];P.mp=[];
+M.forEach(([x,y,z,ry])=>{mk(P,new THREE.BoxGeometry(1.7,2,.14),x,y,z,{r:[0,ry,0]});
+const pp=[x+Math.sin(ry)*.1,y,z+Math.cos(ry)*.1];actor(P,new THREE.PlaneGeometry(1.4,1.7),pp[0],pp[1],pp[2],{r:[0,ry,0]});P.mp.push(pp);
+mk(P,new THREE.CylinderGeometry(.1,.1,y-1,6),x,(y-1)/2+.15,z,{noEdge:true,e:.8})});
+lines(P,M.map(m=>new V3(m[0],m[1],m[2])),.8,true);
+P.gear=mk(P,new THREE.CylinderGeometry(1.15,1.15,.35,10),0,.55,2.6);
+P.gr2=tor(P,1.55,.04,0,.6,2.6,.8,[PI/2,0,0]);
+actor(P,new THREE.CylinderGeometry(.35,.35,.4,12),0,.8,2.6);
+mk(P,new THREE.BoxGeometry(1.4,.12,1.6),-3.3,.45,2.8);
+actor(P,new THREE.PlaneGeometry(.9,1.2),-3.3,1.1,2.8,{r:[-.5,.3,.2]});
+P.top=6;P.pe=[-.6,2,3.8];
+const PA=[-3.3,1.2,2.8];
+P.fl=[{a:PA,b:'c',t0:2.2,t1:4,col:0xff9a4d,arc:2.5},{a:'c',b:P.mp[0],t0:5,t1:6.4,col:0xffffff,arc:2},{a:P.mp[0],b:P.mp[1],t0:6.6,t1:7.8,col:0xffffff,arc:1},{a:P.mp[1],b:P.mp[2],t0:8,t1:9.2,col:0xffffff,arc:1},{a:P.mp[2],b:P.mp[3],t0:9.4,t1:10.6,col:0xffffff,arc:1},{a:P.mp[3],b:PA,t0:10.8,t1:12,col:WASABI,arc:2.5}];
+P.lights=[[5,2.2],[4,5],[0,5.2],[1,6.8],[2,8.2],[3,9.6]];P.alert=[];
+P.tags=[['Enterprise Fax',[-3.3,2.4,2.8],2.2]];
+P.anim=(t,s)=>{if(s<5||s>=12)return;P.gear.rotation.y=t*2.6;P.gr2.rotation.z=-t*1.6}},
+/* GFO */
+P=>{const X=[-3.2,-1.6,0,1.6,3.2],H=[1.4,2.2,3,3.8,4.6];P.ct=[];
+X.forEach((x,i)=>{mk(P,new THREE.CylinderGeometry(.5,.5,H[i],24),x,.15+H[i]/2,-2.4);actor(P,new THREE.CylinderGeometry(.62,.62,.12,24),x,.25+H[i],-2.4);P.ct.push([x,.4+H[i],-2.4])});
+glass(P,new THREE.PlaneGeometry(3.2,2.2),0,2.2,.9,.16);
+const fr=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(3.2,2.2)),new THREE.LineBasicMaterial({color:P.col,transparent:true,opacity:.95}));reg(P,fr.material,.95,'o');fr.position.set(0,2.2,.9);P.g.add(fr);
+const rp=[];for(let k=0;k<6;k++){const y=3+k*-.3+(-.1);rp.push(new V3(-1.3,y,.9),new V3(1.3,y,.9))}lines(P,rp,.6,false).position.z=.02;
+[-1.4,1.4].forEach(x=>mk(P,new THREE.CylinderGeometry(.08,.08,1.2,6),x,.75,.9,{noEdge:true,e:.8}));
+actor(P,new THREE.PlaneGeometry(2.8,.22),0,2.9,.93,{add:true,op:.8});
+actor(P,new THREE.TorusGeometry(.55,.08,6,6),1.8,1,2.8);
+P.dial=hexRing(P,1.2,.05,0,4.7,.9,.85);const tk=[];for(let i=0;i<6;i++){const a=i/6*PI*2;tk.push(new V3(Math.cos(a)*1,Math.sin(a)*1,0),new V3(Math.cos(a)*1.15,Math.sin(a)*1.15,0))}
+const tl=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tk),lineMat(P.col,.7));reg(P,tl.material,.7,'o');P.dial.add(tl);
+P.top=6.3;P.pe=[0,2,3.7];
+const R0=[-2.8,.9,3],ST=[1.8,1,2.8],LD=[0,2.2,.9];
+P.fl=[{a:R0,b:'c',t0:2.2,t1:3.8,col:0xffc24d,arc:2},{a:ST,b:'c',t0:2.6,t1:4.2,col:0xffc24d,arc:2},{a:'c',b:LD,t0:5,t1:6.4,col:ICE,arc:2},{a:'c',b:LD,t0:5.4,t1:6.8,col:ICE,arc:2},
+{a:LD,b:P.ct[2],t0:7.6,t1:9,col:ICE,arc:2},{a:LD,b:P.ct[3],t0:8.2,t1:9.6,col:ICE,arc:2},{a:LD,b:P.ct[4],t0:8.8,t1:10.2,col:ICE,arc:2},{a:P.ct[4],b:ST,t0:10.6,t1:12,col:WASABI,arc:2.5}];
+P.lights=[[6,2.4],[5,5.2],[0,6],[1,6.6],[2,7.4],[3,8],[4,8.6]];P.alert=[];
+P.tags=[['Journal Entry',[1.8,2.2,2.8],2.4]];
+P.anim=(t,s)=>{if(s<0)return;const b=P.act[5].me;b.position.y=2.9-1.5*seg(s,6.6,10.6)}},
+/* CRCA */
+P=>{mk(P,new THREE.TorusGeometry(2.2,.16,8,40,PI),0,.3,.2);[-2.2,2.2].forEach(x=>mk(P,new THREE.CylinderGeometry(.28,.28,.5,10),x,.25,.2));
+actor(P,new THREE.CircleGeometry(2.1,32,0,PI),0,.3,.2,{add:true,op:.38});
+const S=[];[-1,1].forEach(sx=>{const ry=-sx*.5,x=sx*3,z=-1.6;mk(P,new THREE.CylinderGeometry(.1,.1,1.4,6),x,.85,z,{noEdge:true,e:.8});
+mk(P,new THREE.BoxGeometry(1.9,1.3,.1),x,1.9,z,{r:[0,ry,0]});const pp=[x+Math.sin(ry)*.08,1.9,z+Math.cos(ry)*.08];actor(P,new THREE.PlaneGeometry(1.6,1),pp[0],pp[1],pp[2],{r:[0,ry,0]});S.push([x,1.9,z])});
+actor(P,new THREE.TorusGeometry(1,.07,8,40),0,5,-.8,{add:true});
+const hg=new THREE.BoxGeometry(.05,.85,.05);hg.translate(0,.43,0);P.hand=new THREE.Mesh(hg,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95}));reg(P,P.hand.material,.95,'o');P.hand.position.set(0,5,-.8);P.g.add(P.hand);
+actor(P,new THREE.OctahedronGeometry(.32),0,.9,3.1);
+P.top=7;P.pe=[0,2.2,3.8];
+const KEY=[0,.9,3.1],GT_=[0,1.4,.2],CK=[0,5,-.8];
+P.fl=[{a:KEY,b:'c',t0:2.2,t1:3.8,col:P.col,arc:2},{a:'c',b:S[0],t0:4.8,t1:6.2,col:ICE,arc:2},{a:'c',b:S[1],t0:5.4,t1:6.8,col:ICE,arc:2},{a:S[0],b:GT_,t0:7.6,t1:9,col:ICE,arc:1.5},{a:S[1],b:GT_,t0:8,t1:9.4,col:ICE,arc:1.5},{a:'c',b:CK,t0:8.6,t1:10,col:ICE,arc:2},{a:GT_,b:KEY,t0:9.8,t1:11.4,col:WASABI,arc:2}];
+P.lights=[[4,2.2],[1,4.8],[2,5.4],[0,7.8],[3,8.6]];P.alert=[];
+P.tags=[['Dragon Medical One',[-3,3.2,-1.6],4.8],['GE MUSE',[3,3.2,-1.6],5.4],['SLA',[0,6.4,-.8],8.4]];
+P.anim=(t,s)=>{if(s<0)return;P.hand.rotation.z=-(seg(s,4.8,12)*PI*2)}}];
+
+function buildPillar(i){
+const d=PIL[i],a=-PI/2+SLOT[i]*PI*2/7;
+const g=new THREE.Group();g.position.set(Math.cos(a)*R,0,Math.sin(a)*R);g.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));g.scale.setScalar(.001);scene.add(g);
+const P={d,i,a,a0:a,g,col:d.col,colB:new Col(d.col).lerp(new Col(0xffffff),.35),regs:[],act:[],lum:1,lumT:1,appear:0,fo:1,center:g.position.clone(),top:6,hot:false,spin:0,sw:1,spinV:SPIN[i],rotBase:g.rotation.y};
+mk(P,new THREE.CylinderGeometry(PR,PR+.2,.3,48),0,0,0,{c:0x17405e,e:.25});
+tor(P,PR-.35,.045,0,.2,0,.85,[PI/2,0,0]);
+P.halo=sprite(d.col,15,.12);P.halo.position.y=2.5;P.g.add(P.halo);reg(P,P.halo.material,.12,'o');
+B[i](P);
+P.hit=new THREE.Mesh(new THREE.CylinderGeometry(PR+.4,PR+.4,P.top+1,12),new THREE.MeshBasicMaterial({visible:false}));P.hit.position.y=(P.top+1)/2;g.add(P.hit);
+P.label=mkLabel('dist');P.label.setHtml('<b>'+d.ab+'</b><i>'+d.name+'</i>');P.label.el.style.setProperty('--hc','#'+new Col(d.col).getHexString());
+P.label.pos.set(P.center.x,P.top+.4,P.center.z);
+pillars.push(P)}
+
+/* ServiceNow <-> pillar links: stop at the edge of a protected zone around the core (radius 6.4) */
+const OV_PTS=[],ZONE=6.4;
+function linkEnd(x,z,out){out.set(x,0,z).setLength(ZONE);out.y=CORE_Y-1.6;return out}
+function buildLinks(){
+pillars.forEach(P=>{const s=new V3(P.center.x,1.2,P.center.z),e=linkEnd(P.center.x,P.center.z,new V3()),mid=s.clone().lerp(e,.5);mid.y+=4;
+const curve=new THREE.QuadraticBezierCurve3(s,mid,e);
+const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(48)),lineMat(P.col,.1));scene.add(line);
+const N=6,arr=new Float32Array(N*3),off=[];for(let k=0;k<N;k++)off.push(k/N);
+const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(arr,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.6,map:GT,color:P.col,transparent:true,blending:ADD,depthWrite:false,opacity:0}));pts.frustumCulled=false;scene.add(pts);
+streams.push({P,curve,line,pts,arr,off,N})});
+layout()}
+let stretch=1;
+function layout(){
+const asp=innerWidth/innerHeight,ns=clamp(1+(asp-1)*.62,1,2);
+if(Math.abs(ns-stretch)>.01&&st.on)hideStory();
+stretch=ns;
+pillars.forEach((P,i)=>{const x=Math.cos(P.a)*R*stretch,z=Math.sin(P.a)*R;
+P.g.position.set(x,0,z);P.rotBase=Math.atan2(-x,-z);P.g.rotation.y=P.rotBase+P.spin;P.center.copy(P.g.position);P.label.pos.set(x,P.top+.4,z);
+const S=streams[i];if(S){const e=linkEnd(x,z,S.curve.v2);S.curve.v0.set(x,1.2,z);S.curve.v1.set((x+e.x)/2,(1.2+e.y)/2+4,(z+e.z)/2);S.line.geometry.setFromPoints(S.curve.getPoints(48))}});
+OV_PTS.length=0;
+for(let i=0;i<32;i++){const a=i/32*PI*2;OV_PTS.push(new V3(Math.cos(a)*(R*stretch+PR+.4),0,Math.sin(a)*(R+PR+.4)))}
+pillars.forEach(P=>OV_PTS.push(new V3(P.center.x,P.top+2.2,P.center.z)))}
+
+/* ---------- story engine ---------- */
+const PK=[];const WFN=[],WLK=[],wfL=[],tagL=[];let wfLine,wfGeo,wfPos;
+function buildStory(){
+for(let i=0;i<10;i++)PK.push(mkNode(ICE,.3));
+/* workflow stage markers: flat angular plates (hexagon, diamond, rectangle, pentagon) that face the camera and stay still */
+const WGEO=[()=>{const g=new THREE.CylinderGeometry(.66,.66,.3,6);g.rotateX(PI/2);return g},
+()=>{const g=new THREE.CylinderGeometry(.78,.78,.3,4);g.rotateX(PI/2);return g},
+()=>new THREE.BoxGeometry(1.3,.86,.3),
+()=>{const g=new THREE.CylinderGeometry(.68,.68,.3,5);g.rotateX(PI/2);return g}];
+for(let i=0;i<4;i++){const g=new THREE.Group(),geo=WGEO[i]();
+const body=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x14405c,emissive:ICE,emissiveIntensity:.5,roughness:.4,metalness:.35,flatShading:true,transparent:true}));
+const edge=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:ICE,transparent:true}));body.add(edge);
+const halo=sprite(ICE,3,.4);g.add(body,halo);g.userData={body,edge,halo};g.visible=false;scene.add(g);WFN.push(g);wfL.push(mkLabel(''))}
+/* directional connectors between consecutive stages: a thin line plus an arrow head */
+for(let i=0;i<3;i++){const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3(),new V3(0,0,1)]),new THREE.LineBasicMaterial({color:ICE,transparent:true,opacity:0}));
+const arrow=new THREE.Mesh(new THREE.ConeGeometry(.12,.32,4),new THREE.MeshBasicMaterial({color:ICE,transparent:true,opacity:0}));
+line.visible=arrow.visible=false;line.frustumCulled=false;scene.add(line,arrow);WLK.push({line,arrow})}
+for(let i=0;i<3;i++)tagL.push(mkLabel('tag'));
+wfPos=new Float32Array(80*3);wfGeo=new THREE.BufferGeometry();wfGeo.setAttribute('position',new THREE.BufferAttribute(wfPos,3));
+wfLine=new THREE.Line(wfGeo,lineMat(WASABI,0));wfLine.frustumCulled=false;scene.add(wfLine)}
+const cTmp=new Col(),cRed=new Col(RED),cGreen=new Col(WASABI),cWhite=new Col(0xffffff);
+const W=(P,v)=>v==='c'?corePos.clone():P.g.localToWorld(new V3(v[0],v[1],v[2]));
+let curLine='';
+function setLine(txt,instant){if(txt===curLine)return;curLine=txt;const el=$('line');
+if(instant){el.textContent=txt;el.style.opacity=txt?1:0;el.classList.remove('out');return}
+el.classList.add('out');setTimeout(()=>{el.textContent=txt;el.classList.remove('out');el.style.opacity=txt?1:0},300)}
+function startStory(i){
+const P=pillars[i];hideStory();ringV=0;
+/* world positions are taken in the pillar's resting pose (base rotation, full scale), so the story
+   stays aligned however far the overview rotation had turned or the pillar had faded */
+const ry=P.g.rotation.y,sc=P.g.scale.x;
+P.g.rotation.y=P.rotBase;P.g.scale.setScalar(1);P.g.updateMatrixWorld(true);
+st.on=true;st.t=0;st.P=P;st.i=i;nextStory=(i+1)%7;st.done=false;st.r1=0;st.r2=0;
+st.fl=P.fl.map(f=>({...f,A:W(P,f.a),B:W(P,f.b)}));
+const end=W(P,P.pe),mid=end.clone().lerp(corePos,.5);mid.y+=5;
+st.curve=new THREE.QuadraticBezierCurve3(corePos.clone(),mid,end);
+const cp=st.curve.getPoints(79);for(let k=0;k<80;k++){wfPos[k*3]=cp[k].x;wfPos[k*3+1]=cp[k].y;wfPos[k*3+2]=cp[k].z}wfGeo.attributes.position.needsUpdate=true;
+/* the four steps are laid out on screen every frame (placeSteps): evenly spaced and centred in the free corridor between core and pillar */
+st.wp=[0,1,2,3].map(()=>new V3());st.lp=[0,1,2,3].map(()=>new V3());st.ps=[.55,.55,.55,.55];
+st.arc=st.curve.getPoints(48);
+st.pc=new V3(P.center.x,0,P.center.z);
+for(let k=0;k<4;k++)wfL[k].setText(P.d.stages[k]);
+P.tags.forEach((tg,k)=>{tagL[k].setText(tg[0]);tagL[k].pos.copy(W(P,tg[1]))});
+P.g.rotation.y=ry;P.g.scale.setScalar(sc);P.g.updateMatrixWorld(true);
+const c=P.center;
+st.pts=[new V3(5.5,0,0),new V3(-5.5,0,0),new V3(0,0,5.5),new V3(0,0,-5.5),new V3(0,CORE_Y+4.8,0),end,mid,new V3(c.x,P.top+2.6,c.z),
+...[[5.6,0],[-5.6,0],[0,5.6],[0,-5.6]].map(([x,z])=>new V3(c.x+x,0,c.z+z))];
+$('kick').innerHTML=P.d.ab+' — '+P.d.name+'<small>'+P.d.tech+'</small>';$('kick').style.color='#'+P.colB.getHexString();$('kick').style.opacity=1;
+$('rail').innerHTML=P.d.stages.map(s=>'<span>'+s+'</span>').join('');$('rail').style.opacity=1;
+setNav(true);setLine(P.d.lines[0],true)}
+function hideStory(){
+st.on=false;st.P=null;PK.forEach(n=>n.visible=false);WFN.forEach(n=>n.visible=false);wfL.forEach(l=>l.vis=0);tagL.forEach(l=>l.vis=0);wfLine.material.opacity=0;WLK.forEach(L=>{L.line.visible=false;L.arrow.visible=false});
+pillars.forEach(P=>{P.act.forEach(a=>a.m.color.copy(a.base))});
+$('kick').style.opacity=0;$('rail').style.opacity=0;setNav(false);setLine('',true);
+coreMat.color.setHex(WASABI);groundMat.uniforms.uCol.value.setHex(CYAN)}
+function exitStory(){hideStory()}
+
+function runStory(dt){
+const t=st.t+=dt,P=st.P,fade=1-seg(t,END-1.6,END-.4),done=seg(t,DONE,DONE+.8)*(1-seg(t,END-1.6,END-.2));
+wfGeo.setDrawRange(0,Math.floor(seg(t,1.4,4.4)*80));
+wfLine.material.opacity=.95*fade;wfLine.material.color.setHex(P.col).lerp(cGreen,done);
+PK.forEach((n,k)=>{const f=st.fl[k];if(!f){n.visible=false;return}
+const u=(t-f.t0)/(f.t1-f.t0);if(u>0&&u<1){const e=sm(u);n.position.lerpVectors(f.A,f.B,e);n.position.y+=Math.sin(e*PI)*f.arc;setNode(n,fade,f.col)}else n.visible=false});
+P.act.forEach(a=>a.m.color.copy(a.base));
+P.lights.forEach(([k,t0])=>{const a=P.act[k],br=seg(t,t0,t0+.5);a.m.color.lerp(P.colB,br)});
+P.alert.forEach(([k,t0,t1,c])=>{const ra=seg(t,t0,t0+.25)*(1-seg(t,t1,t1+.5));if(ra>.01)P.act[k].m.color.lerp(cTmp.setHex(c),ra)});
+P.act.forEach(a=>{if(done>0)a.m.color.lerp(cGreen,done)});
+for(let k=0;k<4;k++){const v=seg(t,2.4+k*.3,3.1+k*.3)*fade,n=WFN[k],hit=t>=SPH[k]+.6;n.visible=v>.015;
+if(n.visible){n.quaternion.copy(camera.quaternion);n.scale.setScalar(Math.max(.001,v*st.ps[k]));const c=hit?WASABI:ICE,u=n.userData;
+u.body.material.emissive.setHex(c);u.body.material.opacity=v;u.edge.material.color.setHex(c);u.edge.material.opacity=v;u.halo.material.color.setHex(c);u.halo.material.opacity=.4*v}
+wfL[k].pos.copy(st.lp[k]);wfL[k].vis=v;wfL[k].setCls(hit?'ok':'')}
+for(let k=0;k<3;k++){const L=WLK[k],v=seg(t,2.7+k*.3,3.4+k*.3)*fade,c=t>=SPH[k+1]+.6?WASABI:ICE;L.line.visible=L.arrow.visible=v>.015;
+if(L.line.visible){L.line.material.color.setHex(c);L.line.material.opacity=.85*v;L.arrow.material.color.setHex(c);L.arrow.material.opacity=v}}
+P.tags.forEach((tg,k)=>{tagL[k].vis=seg(t,tg[2],tg[2]+.5)*fade});
+if(t>=4.4&&!st.r1){st.r1=1;addRipple(0,0)}
+if(t>=DONE&&!st.r2){st.r2=1;addRipple(P.center.x,P.center.z)}
+groundMat.uniforms.uCol.value.setHex(CYAN).lerp(cGreen,done);
+const li=t<SPH[1]?0:t<SPH[2]?1:t<SPH[3]?2:3;
+if(t>=SPH[0])setLine(t<END-.6?P.d.lines[li]:'');
+const rail=$('rail').children;for(let k=0;k<4;k++)rail[k].classList.toggle('on',t>=SPH[k]+.3&&t<END-1);
+$('kick').style.opacity=fade;$('rail').style.opacity=fade;
+if(t>=END){const wasAuto=!isInteractive();hideStory();if(wasAuto&&spS<.3)startStory(nextStory)}}
+
+/* ---------- workflow steps: even, centred layout in screen space ---------- */
+const sV=new V3(),sF=new V3(),sUp=new V3(),UPV=new V3(0,1,0),AX=new Float32Array(49),AY=new Float32Array(49),AD=new Float32Array(49),AP=new Float32Array(49);
+const STEP_F0=.27,STEP_F1=.73;   // the four steps span 27%..73% of the core -> pillar distance: equal margins at both ends
+const CORE_RING_R=4.9;           // world radius of the core's outer ring (the solid part of the core)
+function placeSteps(){
+if(!st.on||!st.pc)return;
+const Wp=innerWidth,Hp=innerHeight,tanH=Math.tan(camera.fov*PI/360),n=st.arc.length;
+camera.updateMatrixWorld();camera.getWorldDirection(sF);sUp.set(0,1,0).applyQuaternion(camera.quaternion);
+/* the core -> pillar connection, projected to pixels (with view depth) */
+for(let i=0;i<n;i++){sV.copy(st.arc[i]).applyMatrix4(camera.matrixWorldInverse);AD[i]=-sV.z;sV.copy(st.arc[i]).project(camera);AX[i]=(sV.x*.5+.5)*Wp;AY[i]=(-sV.y*.5+.5)*Hp}
+/* core -> pillar direction on screen; the steps are spaced evenly along it, centred between the two objects,
+   and the first one is kept clear of the core's visible rings (works for landscape and portrait alike) */
+sV.copy(st.pc).project(camera);
+const ax0=AX[0],ay0=AY[0],dx=(sV.x*.5+.5)*Wp-ax0,dy=(-sV.y*.5+.5)*Hp-ay0,len=Math.hypot(dx,dy)||1,tx=dx/len,ty=dy/len;
+let nx=ty,ny=-tx;if(ny>0){nx=-nx;ny=-ny}                                // unit normal on the upper side
+const pwMax=.05*Math.min(Hp,Wp*.62),sMin=CORE_RING_R*(Hp/2)/(AD[0]*tanH)+pwMax*.8+.02*Math.min(Wp,Hp);
+let apMax=0;for(let i=0;i<n;i++){AP[i]=(AX[i]-ax0)*tx+(AY[i]-ay0)*ty;if(AP[i]>apMax)apMax=AP[i]}
+const s0=Math.max(len*STEP_F0,sMin),dMin=3*1.9*pwMax*.8,s1=Math.max(Math.min(len*STEP_F1,apMax*.97),s0+dMin),pw=Math.min(pwMax,(s1-s0)/3/1.9);   // never run past the end of the connection
+const lift=pw*1.05+.025*Hp;                                              // ride just above the connection line
+for(let k=0;k<4;k++){
+const sk=s0+(s1-s0)*k/3;                                                 // equal spacing
+let x=AX[0],y=AY[0],d=AD[0],best=1e9;
+for(let i=0;i<n-1;i++){const p0=AP[i],p1=AP[i+1];
+if(p0!==p1&&(p0-sk)*(p1-sk)<=0){const u=(sk-p0)/(p1-p0);x=AX[i]+(AX[i+1]-AX[i])*u;y=AY[i]+(AY[i+1]-AY[i])*u;d=AD[i]+(AD[i+1]-AD[i])*u;break}
+const dd=Math.min(Math.abs(p0-sk),Math.abs(p1-sk));if(dd<best){best=dd;x=AX[i];y=AY[i];d=AD[i]}}
+const po=Math.max(0,(x-ax0)*nx+(y-ay0)*ny),xx=ax0+tx*sk+nx*(lift+po),yy=ay0+ty*sk+ny*(lift+po);   // exactly even along the chord, riding the arc's bow
+sV.set(xx/Wp*2-1,1-yy/Hp*2,.5).unproject(camera).sub(camera.position).normalize();
+const wpp=2*d*tanH/Hp;
+st.wp[k].copy(camera.position).addScaledVector(sV,d/sV.dot(sF));
+st.ps[k]=pw*wpp/1.45;st.lp[k].copy(st.wp[k]).addScaledVector(sUp,pw*.58*wpp);
+WFN[k].position.copy(st.wp[k])}
+for(let k=0;k<3;k++){const L=WLK[k],a=st.wp[k],b=st.wp[k+1],ps=(st.ps[k]+st.ps[k+1])/2;
+sV.copy(b).sub(a);const len=sV.length();sV.normalize();const hw=Math.min(.85*ps,len*.3),pa=L.line.geometry.attributes.position;
+pa.setXYZ(0,a.x+sV.x*hw,a.y+sV.y*hw,a.z+sV.z*hw);pa.setXYZ(1,b.x-sV.x*hw,b.y-sV.y*hw,b.z-sV.z*hw);pa.needsUpdate=true;
+L.arrow.position.copy(a).lerp(b,.5);L.arrow.scale.setScalar(1.4*ps);L.arrow.quaternion.setFromUnitVectors(UPV,sV)}}
+
+/* ---------- pointer / interaction (canvas only, so page scroll stays free) ---------- */
+const ptr={ndc:new V2(),world:new V3(0,.4,0),amt:0,lastMove:-9,has:false};
+let lastInput=-1e9,yawUser=0,dragging=false,dragMoved=0,lastX=0,downX=0,downY=0;
+const nowS=()=>performance.now()/1000;
+const isInteractive=()=>nowS()-lastInput<30;
+function touch(){lastInput=nowS();document.body.classList.remove('idle');clearTimeout(touch.h);touch.h=setTimeout(()=>document.body.classList.add('idle'),3500)}
+const ray=new THREE.Raycaster();
+function groundPoint(out){ray.setFromCamera(ptr.ndc,camera);const o=ray.ray.origin,d=ray.ray.direction;if(d.y>-.01)return false;const tt=-(o.y-.4)/d.y;out.set(o.x+d.x*tt,.4,o.z+d.z*tt);return true}
+function pick(){ray.setFromCamera(ptr.ndc,camera);const hs=pillars.filter(P=>!st.on||P===st.P).map(P=>P.hit);hs.push(coreHit);const r=ray.intersectObjects(hs,false);if(!r.length)return -1;const o=r[0].object;if(o===coreHit)return 7;return pillars.findIndex(P=>P.hit===o)}
+function setPtr(e){ptr.ndc.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ptr.has=true;ptr.lastMove=nowS()}
+canvas.addEventListener('pointermove',e=>{if(rev.mode||modalOpen)return;setPtr(e);touch();
+if(dragging){const dx=e.clientX-lastX;lastX=e.clientX;dragMoved+=Math.abs(dx);
+if(st.on)yawUser-=dx*.004;
+else{const dr=-dx*.004,dtm=Math.max(.008,(e.timeStamp-lastMoveT)/1000);lastMoveT=e.timeStamp;ring+=dr;ringV=clamp(ringV*.4+(dr/dtm)*.6,-4,4)}}
+if(e.pointerType==='mouse'&&ready){const h=pick();hover=(h>=0&&h<7)?h:-1;canvas.style.cursor=h>=0?'pointer':'default'}});
+canvas.addEventListener('pointerleave',()=>{hover=-1});
+canvas.addEventListener('pointerdown',e=>{if(rev.mode||modalOpen)return;setPtr(e);touch();ringV=0;lastMoveT=e.timeStamp;try{canvas.setPointerCapture(e.pointerId)}catch(_){}dragging=true;dragMoved=0;lastX=downX=e.clientX;downY=e.clientY});
+canvas.addEventListener('pointerup',e=>{dragging=false;ptr.lastMove=nowS()-1.4;if(rev.mode||modalOpen)return;
+if(!ready||introT<7.5||Math.hypot(e.clientX-downX,e.clientY-downY)>10)return;
+setPtr(e);const h=pick();
+if(groundPoint(ptr.world))addRipple(ptr.world.x,ptr.world.z);
+if(h>=0&&h<7)startStory(h);else if(h===7){st.on?exitStory():startStory(nextStory)}else if(st.on)exitStory()});
+canvas.addEventListener('pointercancel',()=>{dragging=false});
+addEventListener('wheel',e=>{if(rev.mode||modalOpen)return;touch();if(!st.on&&Math.abs(e.deltaX)>Math.abs(e.deltaY)){ring+=e.deltaX*.003;ringV=0}},{passive:true});
+addEventListener('contextmenu',e=>e.preventDefault());
+const goPrev=()=>{if(!st.on)return;touch();startStory((st.i+6)%7)};
+const goNext=()=>{if(!st.on)return;touch();startStory((st.i+1)%7)};
+addEventListener('keydown',e=>{touch();if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen()}
+if(!active||rev.mode||modalOpen)return;
+if(e.key==='Escape'&&st.on)exitStory();
+if(e.key==='ArrowLeft')goPrev();
+if(e.key==='ArrowRight')goNext();
+const n=parseInt(e.key);if(n>=1&&n<=7&&ready&&introT>7.5)startStory(n-1)});
+$('backIntro').addEventListener('click',()=>{touch();returnToIntro()});
+$('back').addEventListener('click',e=>{touch();exitStory()});
+$('prev').addEventListener('click',goPrev);
+$('next').addEventListener('click',goNext);
+$('cue').addEventListener('click',()=>scrollTo({top:innerHeight,behavior:'smooth'}));
+$('up').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+const CARDS=[...document.querySelectorAll('.card')].map(c=>{const o={c,h:0,ht:0,mx:0,my:0,tx:0,ty:0,px:.3,py:0,tpx:.3,tpy:0};
+const halo=document.createElement('i');halo.className='halo';halo.style.setProperty('--c',c.style.getPropertyValue('--c'));c.parentNode.insertBefore(halo,c);o.halo=halo;
+c.addEventListener('pointerenter',()=>{o.ht=1});
+c.addEventListener('pointerleave',()=>{o.ht=0;o.tx=0;o.ty=0;o.tpx=.3;o.tpy=0});
+c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();o.tpx=(e.clientX-r.left)/r.width;o.tpy=(e.clientY-r.top)/r.height;o.tx=(o.tpx-.5)*2;o.ty=(o.tpy-.5)*2});return o});
+
+/* ---------- tile video popup ---------- */
+const vm=$('vm'),vmS=$('vmS'),vmX=$('vmX');let vmScroll=0,vmOpener=null,vmTimer=0;
+const PLAY_SVG='<svg viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></svg>';
+function vmElement(cfg){
+  const src=(cfg.src||'').trim();let m,el;
+  if(!src){el=document.createElement('div');el.className='vm-ph';el.innerHTML=PLAY_SVG+'<b></b><span>Video coming soon</span>';el.querySelector('b').textContent=cfg.title||'';return el}
+  const frame=u=>{const f=document.createElement('iframe');f.src=u;f.title=cfg.title||'Video';f.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';f.allowFullscreen=true;return f};
+  if(m=src.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/))return frame('https://www.youtube-nocookie.com/embed/'+m[1]+'?autoplay=1&rel=0&modestbranding=1');
+  if(m=src.match(/vimeo\.com\/(?:video\/)?(\d+)/))return frame('https://player.vimeo.com/video/'+m[1]+'?autoplay=1');
+  el=document.createElement('video');el.src=src;el.controls=true;el.autoplay=true;el.playsInline=true;el.preload='metadata';if(cfg.poster)el.poster=cfg.poster;return el}
+function openVideo(key,opener){
+  if(modalOpen)return;
+  clearTimeout(vmTimer);vmS.textContent='';
+  const cfg=TILE_VIDEOS[key]||{title:'',src:''};
+  vmS.appendChild(vmElement(cfg));
+  vm.setAttribute('aria-label',cfg.title||'Video');
+  vmScroll=scrollY;vmOpener=opener||null;
+  document.documentElement.classList.add('scroll-lock','vm-open');  // freeze the page where it is; reveal the ecosystem behind the blur
+  vm.hidden=false;void vm.offsetWidth;vm.classList.add('on');vm.setAttribute('aria-hidden','false');
+  modalOpen=true;hover=-1;vmX.focus({preventScroll:true})}
+function closeVideo(){
+  if(!modalOpen)return;modalOpen=false;
+  vm.classList.remove('on');vm.setAttribute('aria-hidden','true');
+  vmS.querySelectorAll('video').forEach(v=>v.pause());
+  vmS.querySelectorAll('iframe').forEach(f=>{f.src='about:blank'});
+  document.documentElement.classList.remove('scroll-lock','vm-open');
+  scrollTo({top:vmScroll,behavior:'instant'});                       // restore the exact scroll position
+  vmOpener&&vmOpener.focus({preventScroll:true});
+  vmTimer=setTimeout(()=>{vmS.textContent='';vm.hidden=true},650)}
+vmX.addEventListener('click',closeVideo);
+vm.querySelector('.vm-bd').addEventListener('click',closeVideo);
+vm.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+addEventListener('keydown',e=>{if(modalOpen&&e.key==='Escape')closeVideo()});
+document.querySelectorAll('.card[data-tile]').forEach(c=>{
+  const go=()=>{if(rev.mode||returning)return;touch();openVideo(c.dataset.tile,c)};
+  c.addEventListener('click',go);
+  c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})});
+
+/* ---------- camera ---------- */
+let autoYaw=.6,yaw=.6,pitch=.4,dist=90,fovCur=42;
+const tgt=new V3(0,3.5,0),dT=new V3(),ghost=new V3(),clock=new THREE.Clock(),OV_TGT=new V3(0,3.5,0);
+const fit={d:40,tgt:new V3()},fR=new V3(),fU=new V3(),fD=new V3();
+function fitView(pts,fixed,yw,pt,fov,asp,fx,fy){
+const cp=Math.cos(pt),sp=Math.sin(pt);
+fD.set(Math.sin(yw)*cp,sp,Math.cos(yw)*cp);fR.set(Math.cos(yw),0,-Math.sin(yw));fU.copy(fD).cross(fR);
+const tv=Math.tan(fov*PI/360),th=tv*asp;
+let cr,cu,cf;
+if(fixed){cr=fixed.dot(fR);cu=fixed.dot(fU);cf=fixed.dot(fD)}
+else{let r0=1e9,r1=-1e9,u0=1e9,u1=-1e9,f0=1e9,f1=-1e9;
+for(const p of pts){const r=p.dot(fR),u=p.dot(fU),f=p.dot(fD);if(r<r0)r0=r;if(r>r1)r1=r;if(u<u0)u0=u;if(u>u1)u1=u;if(f<f0)f0=f;if(f>f1)f1=f}
+cr=(r0+r1)/2;cu=(u0+u1)/2;cf=(f0+f1)/2}
+let d=8;
+for(const p of pts){const r=p.dot(fR)-cr,u=p.dot(fU)-cu,f=p.dot(fD)-cf;d=Math.max(d,Math.abs(r)/(th*fx)+f,Math.abs(u)/(tv*fy)+f)}
+fit.d=d;fit.tgt.set(0,0,0).addScaledVector(fR,cr).addScaledVector(fU,cu).addScaledVector(fD,cf);
+fit.tgt.y-=d*tv*.05/Math.max(.3,cp)}
+function updateCamera(dt){
+const asp=innerWidth/innerHeight,wide=clamp((asp-.75)/1),intro=introT<7;
+let dYaw,dPitch,dFov,dDist;
+if(st.on&&st.pts){
+const off=lerp(.45,1.3,clamp((asp-.7)/.8));
+dYaw=PI/2-(st.P.a+off);dPitch=lerp(.5,.3,wide);dFov=36;autoYaw=yaw;
+fitView(st.pts,null,dYaw+yawUser,dPitch,dFov,asp,.88,.76);dT.copy(fit.tgt);dDist=fit.d}
+else{
+dYaw=Math.sin(T*.07)*.12;autoYaw=yaw;dPitch=lerp(.62,.36,wide);dFov=42;
+fitView(OV_PTS,OV_TGT,0,dPitch,dFov,asp,.93,.86);dT.copy(fit.tgt);dDist=fit.d*(intro?lerp(1.5,1,sm(introT/7)):1)}
+if(rev.mode){const rp=1-clamp(introT/8);dYaw+=rp*.6;dPitch+=rp*.22;dFov+=rp*8;dDist*=1+.35*rp}   // reverse: orbit up and away from the ecosystem
+dDist*=lerp(1,.62,spS);dT.lerp(corePos,spS*.6);
+yawUser*=Math.exp(-dt*(dragging?0:.12));
+const k=1-Math.exp(-dt*1.6);
+yaw+=angDiff(dYaw+yawUser,yaw)*k;pitch+=(dPitch-pitch)*k;dist+=(dDist-dist)*k;tgt.lerp(dT,k);
+const df=(dFov-fovCur)*k;if(Math.abs(df)>1e-4){fovCur+=df;camera.fov=fovCur;camera.updateProjectionMatrix()}
+camera.position.set(tgt.x+Math.sin(yaw)*Math.cos(pitch)*dist,tgt.y+Math.sin(pitch)*dist,tgt.z+Math.cos(yaw)*Math.cos(pitch)*dist);
+camera.lookAt(tgt)}
+
+/* ---------- main update ---------- */
+/* dt = real frame time (transitions, easing, interaction); adt = animation time (0 while paused) */
+function update(dt){
+const adt=paused?0:dt;
+T+=adt;
+if(rev.mode===1){introT=Math.max(0,introT-dt*rev.speed);
+if(!rev.fired&&introT<=2.6){rev.fired=true;rev.cb&&rev.cb()}
+if(introT<=0){rev.mode=2;rev.res&&rev.res()}}
+else if(rev.mode===2)introT=0;
+else introT+=dt;
+const t=T,now=nowS();
+const coreApp=seg(introT,.2,2.4);
+core.scale.setScalar(Math.max(.001,coreApp*CS));
+coreHalo.scale.setScalar(7+Math.sin(t*1.2)*.25);
+base.scale.setScalar(Math.max(.001,seg(introT,1,3)*CS));ped.visible=coreApp>.5;
+groundMat.uniforms.uReveal.value=lerp(0,52,seg(introT,1,6));
+coreRings.forEach((r,i)=>{r.rotation.z+=adt*(.3+i*.15)*(i%2?-1:1);r.rotation.x+=adt*.06});
+coreIco.rotation.y+=adt*.2;coreIco.rotation.x+=adt*.1;coreInner.rotation.y-=adt*.6;shield.rotation.y-=adt*.03;
+coreInner.scale.setScalar(1+Math.sin(t*1.6)*.03);
+coreLight.intensity=3*coreApp*(1+Math.sin(t*1.6)*.05);
+coreLabel.vis=seg(introT,2.5,3.8)*.95;
+if(!st.on&&pillars.length===7&&streams.length===7){
+if(Math.abs(ringV)>.0005){if(dragging)ringV*=Math.exp(-dt*12);else{ring+=ringV*dt;ringV*=Math.exp(-dt*2.2)}}else ringV=0;
+if(ring!==ringApplied){ringApplied=ring;pillars.forEach(P=>{P.a=P.a0+ring});layout()}}
+/* pillars: default < hover < active. In focus, the other six are fully hidden (not just dimmed). */
+pillars.forEach((P,i)=>{
+P.appear=seg(introT,1.8+i*.45,4.2+i*.45);
+const active=st.on&&st.P===P;
+P.fo+=((st.on&&!active?0:1)-P.fo)*Math.min(1,dt*5);
+P.g.scale.setScalar(Math.max(.001,P.appear*P.fo));P.g.visible=P.appear>.002&&P.fo>.03;
+/* subtle continuous rotation in overview; eases back to the resting pose when selected */
+P.sw+=((active?0:1)-P.sw)*Math.min(1,dt*2);
+if(active){const tg=Math.round(P.spin/(PI*2))*PI*2;P.spin+=(tg-P.spin)*Math.min(1,dt*3.5)}
+P.spin+=adt*P.spinV*P.sw;
+P.g.rotation.y=P.rotBase+P.spin;
+P.lumT=active?2.1:(hover===i&&!st.on?1.6:(hover>=0&&!st.on?.75:1));
+P.lum+=(P.lumT-P.lum)*Math.min(1,dt*6);
+for(const r of P.regs){if(r.k==='e')r.m.emissiveIntensity=r.b*P.lum;else r.m.opacity=Math.min(1,r.b*P.lum)}
+P.anim(t,active?st.t:-1);
+const hot=!st.on&&hover===i;P.label.setCls(hot||active?'hot':'');
+const lt=(st.on?(active?1:0):(P.occl?0:1))*seg(introT,3.4+i*.3,4.6+i*.3);P.label.vis+=(lt-P.label.vis)*Math.min(1,dt*7);
+/* a pillar standing in front of the core would put its name on top of the "ServiceNow" label: pin the name onto the pillar instead */
+if(!st.on&&!P.occl){fA.set(P.center.x,P.top+.4,P.center.z).project(camera);fB.set(0,.9,0).project(camera);
+const near=camera.position.distanceTo(P.center)<camera.position.distanceTo(corePos),k=P.lblFront?1.3:1;
+P.lblFront=near&&Math.abs(fA.x-fB.x)*innerWidth*.5<innerWidth*.17*k&&Math.abs(fA.y-fB.y)*innerHeight*.5<innerHeight*.14*k}
+else if(st.on)P.lblFront=false;
+P.lblY=(P.lblY===undefined?P.top+.4:P.lblY)+((P.lblFront?P.top*.42:P.top+.4)-(P.lblY===undefined?P.top+.4:P.lblY))*Math.min(1,dt*5);
+P.label.pos.y=P.lblY});
+/* links: hidden by default except a faint hairline; revealed only on hover; hidden for non-selected in focus */
+streams.forEach(S=>{const P=S.P,vis=P.appear*P.fo,active=st.on&&st.P===P,hov=!st.on&&hover===P.i;
+const show=vis>.03&&(!st.on||active);S.line.visible=show;S.pts.visible=show&&hov;
+S.line.material.opacity=(hov?.55:active?.22:.08)*vis;
+if(hov){S.pts.material.opacity=.8;
+for(let k=0;k<S.N;k++){S.off[k]=(S.off[k]+adt*.12)%1;S.curve.getPoint(S.off[k],tmpV);S.arr[k*3]=tmpV.x;S.arr[k*3+1]=tmpV.y;S.arr[k*3+2]=tmpV.z}
+S.pts.geometry.attributes.position.needsUpdate=true}});
+/* ground pointer field: off in focus mode */
+const real=isInteractive()&&ptr.has;
+if(real){groundPoint(ptr.world);const ta=(!st.on&&(now-ptr.lastMove<2.4||dragging))?1:0;ptr.amt+=(ta-ptr.amt)*Math.min(1,dt*(ta?8:1.6))}
+else{const k=st.on?0:seg(introT,5,8)*.35;ghost.set(Math.cos(t*.23)*(14+6*Math.sin(t*.11)),.4,Math.sin(t*.31)*(14+5*Math.cos(t*.17)));ptr.world.lerp(ghost,Math.min(1,dt*4));ptr.amt+=(k-ptr.amt)*Math.min(1,dt*1.5)}
+groundMat.uniforms.uPtr.value.set(ptr.world.x,ptr.amt,ptr.world.z);groundMat.uniforms.uT.value=t;
+if(!st.on&&introT>11&&!isInteractive()&&spS<.1&&!update.started&&!paused){update.started=true;startStory(0)}
+if(st.on)runStory(adt);
+const sp=clamp(scrollY/(innerHeight*.85));spS+=(sp-spS)*Math.min(1,dt*9);
+vmBack+=((modalOpen?1:0)-vmBack)*Math.min(1,dt*5);                       // video popup: keep the 3D scene visible behind the blur
+const rv=rev.mode?1-clamp(introT/2.6):0;                                  // 0 -> 1 while the ecosystem dissolves into the intro
+canvas.style.opacity=(Math.max(1-seg(spS,.1,.95),vmBack*.9)*(1-seg(rv,.25,1))).toFixed(3);
+canvas.style.transform='scale('+(1+spS*.05+rv*.16).toFixed(4)+')';
+canvas.style.filter=rv>.01?'blur('+(rv*7).toFixed(1)+'px)':'';
+$('hud').style.opacity=((1-clamp(spS*2.2))*(1-clamp(rv*2.5))).toFixed(3);
+/* Back to intro is shown only in the overall ecosystem view (and its cards section), never inside a pillar story */
+const inCards=scrollY>innerHeight*.3;document.body.classList.toggle('in-cards',inCards);   // tiles view: floating Back to intro / Pause step aside
+const showBack=!st.on&&!rev.mode&&!returning&&!modalOpen&&!inCards;
+if(showBack!==backShown){backShown=showBack;const bb=$('backIntro');bb.classList.toggle('off',!showBack);bb.inert=!showBack}
+const cc=$('cue');const cv=!st.on&&introT>8&&spS<.05;cc.style.opacity=cv?.9:0;cc.style.pointerEvents=cv?'auto':'none';
+$('hint').style.opacity=(introT>6&&!isInteractive()&&!st.on&&spS<.05)?.85:0;
+$('up').classList.toggle('on',spS>.7);
+document.querySelectorAll('.cw').forEach((c,i)=>{const r=seg(spS,.3+i*.08,.8+i*.05);c.style.opacity=r.toFixed(3);c.style.transform='translateY('+((1-r)*70).toFixed(1)+'px)'});
+CARDS.forEach(o=>{const k=1-Math.exp(-dt*(o.ht>o.h?6:3.5)),kt=1-Math.exp(-dt*8);
+o.h+=(o.ht-o.h)*k;o.mx+=(o.tx-o.mx)*kt;o.my+=(o.ty-o.my)*kt;o.px+=(o.tpx-o.px)*kt;o.py+=(o.tpy-o.py)*kt;
+const tr='perspective(1100px) translate3d(0,'+(-12*o.h).toFixed(2)+'px,0) rotateX('+(-o.my*3*o.h).toFixed(2)+'deg) rotateY('+(o.mx*4*o.h).toFixed(2)+'deg) scale('+(1+.014*o.h).toFixed(4)+')';
+o.c.style.transform=tr;o.halo.style.transform=tr;o.halo.style.opacity=(o.h*.8).toFixed(3);
+o.c.style.setProperty('--h',o.h.toFixed(3));o.c.style.setProperty('--mx',(o.px*100).toFixed(1)+'%');o.c.style.setProperty('--my',(o.py*100).toFixed(1)+'%')});
+updateCamera(dt);
+placeSteps();
+placeOcc(coreApp)}
+
+function resize(){const w=innerWidth,h=innerHeight;if(pillars.length===7&&streams.length===7)layout();renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();labels.forEach(L=>L.w=0)}
+addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));document.addEventListener('fullscreenchange',()=>setTimeout(resize,100));
+if(window.visualViewport)visualViewport.addEventListener('resize',resize);
+resize();
+document.body.classList.add('idle');
+
+function frame(){requestAnimationFrame(frame);if(!ready||!active)return;const dt=Math.min(clock.getDelta(),.05);update(dt);if(spS<.995||vmBack>.01){updateLabels();renderer.render(scene,camera)}}
+frame();
+
+/* hooks used by the reverse transition (ecosystem -> intro) and by the return visit */
+ecoApi={
+  prepare(){closeVideo();const was=st.on;if(was)exitStory();hover=-1;ringV=0;dragging=false;return was},
+  retreat(cb){return new Promise(res=>{rev.fired=false;rev.cb=cb;rev.res=res;introT=Math.min(introT,8.2);rev.mode=1})},
+  suspend(){active=false},
+  reload(cb){                                              // return visit: the same loader, run briefly while the built scene is re-armed
+    shown=0;target=0;booted=false;afterLoad=cb;$('ls').textContent='Restoring ecosystem';$('loader').classList.remove('done');
+    if(!loaderOn){loaderOn=true;lframe()}
+    const t0=performance.now();(function tick(){const k=Math.min(1,(performance.now()-t0)/1800);target=1-Math.pow(1-k,2);if(k<1)requestAnimationFrame(tick);else booted=true})()},
+  resume(){rev.mode=0;introT=0;update.started=false;active=true;clock.getDelta()}
+};
+
+/* ---------- loader: progress reflects real initialisation tasks ---------- */
+const lc=$('lc'),lx=lc.getContext('2d');let lw,lh,lpts=[],loaderOn=true,shown=0,target=0,booted=false,afterLoad=null;
+function lres(){lw=lc.width=innerWidth;lh=lc.height=innerHeight;lpts=[];for(let i=0;i<50;i++)lpts.push({x:Math.random()*lw,y:Math.random()*lh,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,c:Math.random()<.2})}
+lres();addEventListener('resize',lres);
+function lframe(){if(!loaderOn)return;requestAnimationFrame(lframe);
+lx.fillStyle='rgba(1,10,18,.2)';lx.fillRect(0,0,lw,lh);
+for(const p of lpts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>lw)p.vx*=-1;if(p.y<0||p.y>lh)p.vy*=-1}
+lx.lineWidth=1;for(let i=0;i<lpts.length;i++){const a=lpts[i];for(let j=i+1;j<lpts.length;j++){const b=lpts[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<150){lx.strokeStyle='rgba(98,216,78,'+(.14*(1-d/150)).toFixed(3)+')';lx.beginPath();lx.moveTo(a.x,a.y);lx.lineTo(b.x,b.y);lx.stroke()}}
+lx.fillStyle=a.c?'rgba(98,216,78,.9)':'rgba(190,240,255,.5)';lx.fillRect(a.x-1,a.y-1,2,2)}
+{const g=target*100-shown;shown=g>.05?shown+Math.max(g*.06,.12):target*100}                 // eased, so the bar glides through heavy build steps
+$('lb').firstElementChild.style.transform='scaleX('+(shown/100)+')';$('lp').textContent=Math.floor(shown)+'%';
+if(booted&&shown>=100){loaderOn=false;$('loader').classList.add('done');ready=true;introT=0;clock.getDelta();if(afterLoad){const f=afterLoad;afterLoad=null;f()}}}
+lframe();
+const tasks=[
+['Loading typography',()=>Promise.race([document.fonts?document.fonts.ready:0,new Promise(r=>setTimeout(r,1500))])],
+['Building ServiceNow core',buildCore],
+...PIL.map((d,i)=>['Building '+d.ab,()=>buildPillar(i)]),
+['Connecting pillars',buildLinks],
+['Preparing stories',buildStory],
+['Compiling scene',()=>renderer.compile(scene,camera)]];
+(async()=>{
+const frame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+for(let i=0;i<tasks.length;i++){$('ls').textContent=tasks[i][0];await frame();   // let the bar paint before each heavy step
+try{await tasks[i][1]()}catch(e){console.error(e)}target=(i+1)/tasks.length}
+booted=true})();
+}
+
+/* =====================================================================
+   EXPERIENCE 1 · INTRO + HAND-OVER TO THE ECOSYSTEM
+   ===================================================================== */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const introRoot=$('#introRoot'),stage=$('#stage'),intro=$('#intro'),world=$('#world'),eco=$('#eco');
+const mq=matchMedia('(prefers-reduced-motion: reduce)');
+let reduced=mq.matches,entered=false,timers=[],raf=0,camX=0,countdown=0,capTimer=0,returning=false,ecoApi=null;
+
+/* Three.js is fetched in the background while the intro plays, so the hand-over never waits on it. */
+const threeReady=new Promise((ok,fail)=>{
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload=ok;s.onerror=fail;document.head.appendChild(s);
+}).catch(()=>{});
+
+/* ---------- stage scaling & motion ---------- */
+/* speech bubbles are anchored to each speaker's head circle in the SVG (cx, cy, r): the tail tip lands just above the head,
+   and the bubble is scaled about that tip if the visible (cover-cropped) area would otherwise cut it off */
+const BUBBLES=[['bPatient','headPatient',{tx:90}],['bClin','headClin',{tx:80}],['bEng','headEng',{right:736}]];   // right: keep clear of the India monitor
+const TAIL=36;                                                              // px the CSS tail extends below the bubble body
+function layoutBubbles(cy){
+  BUBBLES.forEach(([bid,hid,o])=>{
+    const b=document.getElementById(bid),h=document.getElementById(hid);if(!b||!h)return;
+    const ax=+h.getAttribute('cx'),ay=+h.getAttribute('cy')-(+h.getAttribute('r'))-22,w=b.offsetWidth,hh=b.offsetHeight;
+    const tx=Math.min(Math.max(o.right?ax-(o.right-w):o.tx,44),w-44),sc=Math.min(1,Math.max(.6,(ay-cy-18)/(hh+TAIL)));
+    b.style.left=(ax-tx)+'px';b.style.top=(ay-TAIL-hh)+'px';b.style.setProperty('--tx',tx+'px');b.style.setProperty('--bs',sc.toFixed(3));
+  });
+}
+function fit(){
+  /* cover scaling: the 1920x1080 artboard always fills the viewport (no margins, no distortion).
+     --cx / --cy = design-px cropped on each side, used to keep captions and labels inside the visible area. */
+  const vw=innerWidth,vh=innerHeight,asp=vw/vh;
+  /* cover for normal/wide screens; below 3:2 switch to fit-width so side content is never cropped (navy fills the rest) */
+  const k=asp>=1.5?Math.max(vw/1920,vh/1080):vw/1920;
+  stage.style.transform=`translate(-50%,-50%) scale(${k})`;
+  stage.style.setProperty('--cx',Math.max(0,(1920-vw/k)/2).toFixed(1)+'px');
+  const cx=Math.max(0,(1920-vw/k)/2),cy=Math.max(0,(1080-vh/k)/2);
+  stage.style.setProperty('--cy',cy.toFixed(1)+'px');
+  layoutTeams(cx,cy);layoutBubbles(cy);
+}
+/* seven pillar cards + connector lines, laid out inside the visible (uncropped) area */
+function layoutTeams(cx,cy){
+  const cards=$$('.team'),paths=$$('#gLines path');if(!cards.length)return;
+  const top=cy+Math.max(110,0),bot=1080-cy-70,gap=10,n=cards.length;
+  const h=Math.min(94,(bot-top-gap*(n-1))/n),w=Math.min(360,1920-cx-24-1380);
+  const left=Math.min(1420,1920-cx-24-w),mid=(left-1360)/2;
+  cards.forEach((c,i)=>{const y=top+i*(h+gap);c.style.top=y+'px';c.style.left=left+'px';c.style.width=w+'px';c.style.height=h+'px';
+    c.classList.toggle('tight',h<84);
+    paths[i].setAttribute('d',`M1360 510C${1360+mid} 510 ${1360+mid} ${y+h/2} ${left} ${y+h/2}`)})
+}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,200));fit();
+if(document.fonts)document.fonts.ready.then(fit);
+
+function setReduced(v){
+  reduced=v;introRoot.classList.toggle('reduce',v);
+  const b=$('#ctrlMotion');b.textContent='Motion: '+(v?'Off':'On');b.setAttribute('aria-pressed',String(v));
+}
+const onMotionPref=e=>setReduced(e.matches);
+mq.addEventListener&&mq.addEventListener('change',onMotionPref);
+setReduced(reduced);
+
+/* ---------- intro timeline ---------- */
+/* pausable clock: the intro timeline runs on virtual time, which stands still while the portal is paused */
+let vt=0,vLast=performance.now(),vq=[];
+const vset=(ms,fn)=>{const e={t:vt+ms,fn};vq.push(e);return e},vclear=e=>{if(e)e.dead=true};
+(function vtick(){const n=performance.now();if(!document.body.classList.contains('paused'))vt+=Math.min(100,n-vLast);vLast=n;
+for(let i=0;i<vq.length;i++){const e=vq[i];if(!e.dead&&e.t<=vt){e.dead=true;try{e.fn()}catch(x){console.error(x)}}}
+vq=vq.filter(e=>!e.dead);requestAnimationFrame(vtick)})();
+const at=(ms,fn)=>timers.push(vset(ms,fn));
+function setCam(x){camX=x;world.style.transform=`translate3d(${-x}px,0,0)`;$('#stars').style.transform=`translate3d(${-x*1.35}px,0,0)`}
+const flag=c=>intro.classList.add(c);
+function cap(t){
+  const c=$('#caption');c.classList.remove('show');
+  vclear(capTimer);
+  capTimer=vset(t?350:0,()=>{c.textContent=t;if(t)c.classList.add('show')});
+}
+const bub=(id,on)=>$('#'+id).classList.toggle('show',!!on);
+
+(()=>{ // starfield for the flight
+  const st=$('#stars');let h='';
+  for(let i=0;i<110;i++){const s=1+Math.random()*3;h+=`<i style="left:${Math.random()*7400}px;top:${Math.random()*1000}px;width:${s}px;height:${s}px;opacity:${.25+Math.random()*.5}"></i>`}
+  st.innerHTML=h;
+})();
+
+function clearIntro(){timers.forEach(vclear);timers=[];cancelAnimationFrame(raf);vclear(countdown);vclear(capTimer)}
+function resetIntro(){
+  ['go','s-alert','s-flight','s-arrive','s-record','s-title'].forEach(c=>intro.classList.remove(c));
+  $$('.bubble',intro).forEach(b=>b.classList.remove('show'));
+  $$('.team').forEach(t=>t.classList.remove('on'));$$('#gLines path').forEach(p=>p.classList.remove('on'));
+  $('#title').classList.remove('cta');$('#caption').classList.remove('show');$('#caption').textContent='';
+  $('#gTitle').textContent='Watching for signals…';
+  $('#ctrlSkip').hidden=false;
+  $('#orb').setAttribute('opacity','0');
+  const t=$('#trail'),tc=$('#trailCore');const L=t.getTotalLength();
+  [t,tc].forEach(p=>{p.style.strokeDasharray=L;p.style.strokeDashoffset=L});
+  setCam(0);
+  // restart ken-burns
+  const art=$('.p-us .pz');art.style.animation='none';void art.offsetWidth;art.style.animation='';
+}
+function flight(dur){
+  const t=$('#trail'),tc=$('#trailCore'),orb=$('#orb'),L=t.getTotalLength();
+  orb.setAttribute('opacity','1');
+  const t0=vt,MAX=3840;
+  const ease=p=>-(Math.cos(Math.PI*p)-1)/2;
+  (function step(){
+    const p=Math.min(1,(vt-t0)/dur),e=ease(p),pt=t.getPointAtLength(L*e);
+    orb.setAttribute('cx',pt.x);orb.setAttribute('cy',pt.y);
+    t.style.strokeDashoffset=tc.style.strokeDashoffset=L*(1-e);
+    const target=Math.max(0,Math.min(MAX,pt.x-720));
+    setCam(camX+(target-camX)*.07);
+    if(p<1||Math.abs(camX-MAX)>1){raf=requestAnimationFrame(step)}
+    else{setCam(MAX)}
+  })();
+}
+
+/* Final screen: the CTA fades in, and only once it is fully visible does the 3-second auto-advance start. */
+function armCountdown(){countdown=vset(3000,enterEcosystem)}
+function showTitle(ctaDelay,manual){
+  flag('s-title');bub('bEng',0);bub('bPatient',0);bub('bClin',0);cap('');
+  $('#ctrlSkip').hidden=true;
+  at(ctaDelay,()=>$('#title').classList.add('cta'));
+  if(!manual)at(ctaDelay+800,armCountdown);   // coming back from the ecosystem is a deliberate choice: no auto-advance
+}
+
+function playIntro(){
+  clearIntro();resetIntro();
+  const R=reduced,off=R?-3800:0;
+  flag('go');
+  at(400,()=>cap('A hospital in the United States.'));
+  at(1200,()=>bub('bPatient',1));
+  at(4200,()=>{bub('bClin',1);cap('The people delivering care rely on the systems around them.')});
+  at(7000,()=>{flag('s-alert');cap('Then one of those services begins to slow.')});
+  at(9000,()=>{
+    bub('bPatient',0);bub('bClin',0);cap('The signal doesn’t stop at the hospital door.');flag('s-flight');
+    if(R){const c=$('#cut');c.classList.add('on');at(9000+450,()=>{setCam(3840);c.classList.remove('on')})}
+    else flight(5200);
+  });
+  at(14400+off,()=>{flag('s-arrive');$('#gTitle').textContent='Service alert received';cap('In India, the Global Capability Center sees it.')});
+  at(15800+off,()=>bub('bEng',1));
+  at(18000+off,()=>{flag('s-record');$('#gTitle').textContent='Incident record created · illustrative';cap('Different teams. One shared piece of work.')});
+  [0,1,2,3,4,5,6].forEach((k,i)=>at(18600+i*450+off,()=>{$$('.team')[i].classList.add('on');$$('#gLines path')[i].classList.add('on')}));
+  at(22400+off,()=>showTitle(2000));
+}
+
+/* "Skip intro" settles every stage and lands on the final screen, which still hands over via Explore or the timer. */
+function settleIntro(){
+  ['go','s-alert','s-flight','s-arrive','s-record'].forEach(c=>flag(c));
+  intro.classList.remove('s-title');$('#title').classList.remove('cta');$('#ctrlSkip').hidden=false;
+  $$('.bubble',intro).forEach(b=>b.classList.remove('show'));
+  $$('.team').forEach(t=>t.classList.add('on'));$$('#gLines path').forEach(p=>p.classList.add('on'));
+  $('#gTitle').textContent='Incident record created · illustrative';
+  const t=$('#trail'),tc=$('#trailCore'),end=t.getPointAtLength(t.getTotalLength()),orb=$('#orb');
+  t.style.strokeDashoffset=tc.style.strokeDashoffset=0;
+  orb.setAttribute('cx',end.x);orb.setAttribute('cy',end.y);orb.setAttribute('opacity','1');
+  setCam(3840);
+}
+function skipIntro(){clearIntro();settleIntro();showTitle(1200)}
+
+/* ---------- hand-over: intro -> ecosystem ---------- */
+function enterEcosystem(){
+  if(entered)return;entered=true;
+  clearIntro();
+  introRoot.classList.add('leave');
+  document.documentElement.classList.replace('intro-on','eco-on');
+  if(ecoApi){                                            // return visit: the scene is already built, so only the loader replays
+    eco.hidden=false;void eco.offsetWidth;
+    ecoApi.reload(()=>ecoApi.resume());                  // loader fades in over the intro, runs, then the scene builds in as it lifts
+    setTimeout(()=>introRoot.classList.add('hold'),950);
+    return;
+  }
+  eco.hidden=false;void eco.offsetWidth;
+  $('#loader').classList.remove('pre');                 // ecosystem loader fades in over the intro
+  setTimeout(()=>{                                       // loader is now fully opaque: park the intro (kept for the reverse journey)
+    eco.classList.add('live');
+    introRoot.classList.add('hold');
+    threeReady.then(initEcosystem);        // loader progress starts here
+  },950);
+}
+
+/* ---------- reverse journey: ecosystem -> India GCC -> US hospital -> final screen ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function returnToIntro(){
+  if(returning||!entered||!ecoApi)return;
+  returning=true;
+  const root=document.documentElement;
+  clearIntro();
+  const wasStory=ecoApi.prepare();                       // closes a video popup, leaves a pillar story
+  root.classList.add('scroll-lock');
+  if(wasStory)await sleep(1500);                         // ease back to the overall ecosystem view before pulling away
+  if(scrollY>4){                                         // from the cards section: glide back to the top first
+    scrollTo({top:0,behavior:'smooth'});
+    const t0=performance.now();
+    while(scrollY>4&&performance.now()-t0<2400)await sleep(60);
+  }
+  settleIntro();$('#caption').classList.remove('show');  // stage the intro (hidden) in its "India GCC" end state
+  entered=false;
+  await ecoApi.retreat(revealIntro);                     // pillars retract, camera pulls out; revealIntro fires near the end
+  ecoApi.suspend();
+  returning=false;
+}
+function revealIntro(){
+  const root=document.documentElement;
+  root.classList.remove('scroll-lock');root.classList.replace('eco-on','intro-on');
+  introRoot.classList.remove('leave','hold');            // zoom-out + fade in over the retreating ecosystem
+  playReverse();
+}
+function flightBack(dur,done){
+  const t=$('#trail'),tc=$('#trailCore'),orb=$('#orb'),L=t.getTotalLength();
+  orb.setAttribute('opacity','1');
+  const t0=vt,MAX=3840,ease=p=>-(Math.cos(Math.PI*p)-1)/2;
+  (function step(){
+    const p=Math.min(1,(vt-t0)/dur),q=1-ease(p),pt=t.getPointAtLength(L*q);
+    orb.setAttribute('cx',pt.x);orb.setAttribute('cy',pt.y);
+    t.style.strokeDashoffset=tc.style.strokeDashoffset=L*(1-q);
+    const target=p<1?Math.max(0,Math.min(MAX,pt.x-720)):0;
+    setCam(camX+(target-camX)*.07);
+    if(p<1||Math.abs(camX)>1){raf=requestAnimationFrame(step)}
+    else{setCam(0);done&&done()}
+  })();
+}
+function playReverse(){
+  clearIntro();
+  if(reduced){resetIntro();flag('go');showTitle(300,true);return}
+  cap('Different teams. One shared piece of work.');
+  at(750,()=>[6,5,4,3,2,1,0].forEach((i,k)=>at(k*140,()=>{$$('.team')[i].classList.remove('on');$$('#gLines path')[i].classList.remove('on')})));
+  at(2000,()=>{intro.classList.remove('s-record');$('#gTitle').textContent='Service alert received';cap('The signal retraces its path, back to the hospital.')});
+  at(3100,()=>{bub('bEng',0);intro.classList.remove('s-arrive');cap('');flightBack(3700,arriveUS)});
+}
+function arriveUS(){
+  intro.classList.remove('s-flight','s-alert');
+  $('#orb').setAttribute('opacity','0');
+  const t=$('#trail'),tc=$('#trailCore'),L=t.getTotalLength();[t,tc].forEach(p=>{p.style.strokeDasharray=L;p.style.strokeDashoffset=L});
+  $('#gTitle').textContent='Watching for signals…';
+  const art=$('.p-us .pz');art.style.animation='none';void art.offsetWidth;art.style.animation='';   // replay the slow push-in
+  cap('A hospital in the United States.');
+  at(400,()=>{bub('bClin',1);cap('The people delivering care rely on the systems around them.')});   // reverse order: clinician first, then the patient
+  at(1700,()=>bub('bPatient',1));
+  at(3500,()=>showTitle(1500,true));
+}
+
+introRoot.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');if(!a)return;
+  switch(a.dataset.act){
+    case 'explore':enterEcosystem();break;
+    case 'skip':skipIntro();break;
+    case 'replay':playIntro();break;
+    case 'motion':setReduced(!reduced);break;
+  }
+});
+
+playIntro();
+})();
+</script>
+</body>
+</html>
